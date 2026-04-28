@@ -470,6 +470,15 @@ export const internalOperationInfo: InternalOperationInfo = {
       viewingLocation: "ピッチサイド撮影エリア",
     },
   ],
+  mapAssets: {
+    venueMapImageUrl:
+      "https://images.unsplash.com/photo-1577223625816-7546f13df25d?auto=format&fit=crop&w=1400&q=80",
+    parkingMapImageUrl:
+      "https://images.unsplash.com/photo-1506521781263-d8422e82f27a?auto=format&fit=crop&w=1400&q=80",
+    seatingChartImageUrl:
+      "https://images.unsplash.com/photo-1519751138087-5bf79df62d5b?auto=format&fit=crop&w=1400&q=80",
+  },
+  documents: [],
 };
 
 export const adminTabs = [

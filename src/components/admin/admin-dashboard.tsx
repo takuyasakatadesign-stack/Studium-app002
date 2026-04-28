@@ -31,6 +31,7 @@ import type {
   FoodItem,
   GoodsItem,
   MediaVisitInfo,
+  OperationDocument,
   Shop,
   StaffAssignmentInfo,
   TicketInfo,
@@ -93,6 +94,8 @@ export function AdminDashboard() {
     setGates,
     setGoodsItems,
     setMediaVisits,
+    setOperationDocuments,
+    setOperationMapAssets,
     setShops,
     setSponsorNotes,
     setStaffAssignments,
@@ -114,6 +117,8 @@ export function AdminDashboard() {
   const tickets = data.internalOperationInfo.tickets;
   const mediaVisits = data.internalOperationInfo.mediaVisits ?? [];
   const sponsorNotes = data.internalOperationInfo.sponsorNotes ?? "";
+  const mapAssets = data.internalOperationInfo.mapAssets ?? {};
+  const operationDocuments = data.internalOperationInfo.documents ?? [];
   const users = data.users;
   const [activeTab, setActiveTab] = useState<AdminTab>("運営担当");
   const [savedArea, setSavedArea] = useState<string | null>(null);
@@ -481,6 +486,96 @@ export function AdminDashboard() {
                   <Field label="納品情報">
                     <Input defaultValue="試合前日 15:00 納品" />
                   </Field>
+                </div>
+              </AdminCard>
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-2">
+              <AdminCard
+                actionLabel="マップ画像を保存"
+                onSave={() => save("各種マップ")}
+                title="各種マップ画像"
+                description="会場マップ、駐車場マップ、座席図をアップロードできます。"
+              >
+                <div className="grid gap-4">
+                  <ImageUploadField
+                    imageUrl={mapAssets.venueMapImageUrl}
+                    label="会場マップ"
+                    onChange={(venueMapImageUrl) =>
+                      setOperationMapAssets((current) => ({
+                        ...current,
+                        venueMapImageUrl,
+                      }))
+                    }
+                  />
+                  <ImageUploadField
+                    imageUrl={mapAssets.parkingMapImageUrl}
+                    label="駐車場マップ"
+                    onChange={(parkingMapImageUrl) =>
+                      setOperationMapAssets((current) => ({
+                        ...current,
+                        parkingMapImageUrl,
+                      }))
+                    }
+                  />
+                  <ImageUploadField
+                    imageUrl={mapAssets.seatingChartImageUrl}
+                    label="座席図"
+                    onChange={(seatingChartImageUrl) =>
+                      setOperationMapAssets((current) => ({
+                        ...current,
+                        seatingChartImageUrl,
+                      }))
+                    }
+                  />
+                </div>
+              </AdminCard>
+
+              <AdminCard
+                actionLabel="資料PDFを保存"
+                onSave={() => save("資料PDF")}
+                title="各種資料PDF"
+                description="資料名を記載してPDFを追加できます。"
+                headerAction={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() =>
+                      setOperationDocuments((items) => [
+                        ...items,
+                        {
+                          id: `document-${Date.now()}`,
+                          title: "",
+                          fileName: "",
+                          fileUrl: "",
+                        },
+                      ])
+                    }
+                  >
+                    <Plus className="size-4" />
+                    資料を追加
+                  </Button>
+                }
+              >
+                <div className="grid gap-4">
+                  {operationDocuments.length === 0 ? (
+                    <div className="rounded-md border bg-muted/30 p-4 text-sm text-muted-foreground">
+                      資料はまだ登録されていません。
+                    </div>
+                  ) : null}
+                  {operationDocuments.map((document, index) => (
+                    <PdfUploadField
+                      document={document}
+                      key={document.id}
+                      onChange={(patch) =>
+                        setOperationDocuments((items) =>
+                          items.map((item, itemIndex) =>
+                            itemIndex === index ? { ...item, ...patch } : item,
+                          ),
+                        )
+                      }
+                    />
+                  ))}
                 </div>
               </AdminCard>
             </div>
@@ -1588,6 +1683,66 @@ function ImageUploadField({
           />
         </label>
       </div>
+    </div>
+  );
+}
+
+function PdfUploadField({
+  document,
+  onChange,
+}: {
+  document: OperationDocument;
+  onChange: (patch: Partial<OperationDocument>) => void;
+}) {
+  return (
+    <div className="grid gap-3 rounded-md border bg-muted/20 p-3">
+      <Field label="資料名">
+        <Input
+          placeholder="運営マニュアル"
+          value={document.title}
+          onChange={(event) => onChange({ title: event.target.value })}
+        />
+      </Field>
+      <div className="grid gap-2 md:grid-cols-[1fr_auto]">
+        <Input
+          placeholder="PDF URL またはアップロード後のData URL"
+          value={document.fileName || document.fileUrl}
+          onChange={(event) =>
+            onChange({ fileName: event.target.value, fileUrl: event.target.value })
+          }
+        />
+        <label className="inline-flex h-8 cursor-pointer items-center justify-center gap-1.5 rounded-lg border bg-background px-2.5 text-sm font-medium hover:bg-muted">
+          <Upload className="size-4" />
+          PDFを選択
+          <input
+            accept="application/pdf"
+            className="sr-only"
+            type="file"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+
+              if (!file) {
+                return;
+              }
+
+              const reader = new FileReader();
+              reader.onload = () => {
+                if (typeof reader.result === "string") {
+                  onChange({ fileName: file.name, fileUrl: reader.result });
+                }
+              };
+              reader.readAsDataURL(file);
+            }}
+          />
+        </label>
+      </div>
+      {document.fileUrl ? (
+        <Button asChild className="w-fit" variant="outline">
+          <a href={document.fileUrl} rel="noreferrer" target="_blank">
+            資料を開く
+          </a>
+        </Button>
+      ) : null}
     </div>
   );
 }

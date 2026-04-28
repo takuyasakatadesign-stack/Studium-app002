@@ -192,6 +192,19 @@ export type MediaVisitInfo = {
   viewingLocation: string;
 };
 
+export type OperationMapAssets = {
+  venueMapImageUrl?: string;
+  parkingMapImageUrl?: string;
+  seatingChartImageUrl?: string;
+};
+
+export type OperationDocument = {
+  id: string;
+  title: string;
+  fileName: string;
+  fileUrl: string;
+};
+
 export type InternalOperationInfo = {
   matchId: string;
   weather: {
@@ -215,6 +228,8 @@ export type InternalOperationInfo = {
   sponsors: SponsorInfo[];
   sponsorNotes: string;
   mediaVisits: MediaVisitInfo[];
+  mapAssets: OperationMapAssets;
+  documents: OperationDocument[];
 };
 
 export type MatchScopedData = {

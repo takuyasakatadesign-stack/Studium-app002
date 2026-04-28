@@ -19,6 +19,8 @@ import type {
   MatchScopedData,
   MediaVisitInfo,
   NewsItem,
+  OperationDocument,
+  OperationMapAssets,
   Shop,
   StaffAssignmentInfo,
   StaffEquipmentInfo,
@@ -40,6 +42,8 @@ type StadiumDataContextValue = {
   setGoodsItems: Dispatch<SetStateAction<GoodsItem[]>>;
   setMediaVisits: Dispatch<SetStateAction<MediaVisitInfo[]>>;
   setNewsItems: Dispatch<SetStateAction<NewsItem[]>>;
+  setOperationDocuments: Dispatch<SetStateAction<OperationDocument[]>>;
+  setOperationMapAssets: Dispatch<SetStateAction<OperationMapAssets>>;
   setShop: (shop: Shop) => void;
   setShops: Dispatch<SetStateAction<Shop[]>>;
   setSponsorNotes: Dispatch<SetStateAction<string>>;
@@ -145,6 +149,25 @@ export function StadiumDataProvider({
         setData((current) => ({
           ...current,
           newsItems: resolve(action, current.newsItems),
+        })),
+      setOperationDocuments: (action) =>
+        setData((current) => ({
+          ...current,
+          internalOperationInfo: {
+            ...current.internalOperationInfo,
+            documents: resolve(action, current.internalOperationInfo.documents ?? []),
+          },
+        })),
+      setOperationMapAssets: (action) =>
+        setData((current) => ({
+          ...current,
+          internalOperationInfo: {
+            ...current.internalOperationInfo,
+            mapAssets: resolve(
+              action,
+              current.internalOperationInfo.mapAssets ?? {},
+            ),
+          },
         })),
       setShop: (shop) =>
         setData((current) => ({
