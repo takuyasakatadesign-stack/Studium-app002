@@ -84,6 +84,7 @@ export const eventInfo: EventInfo[] = [
     participationRule: "観覧自由",
     imageUrl:
       "https://images.unsplash.com/photo-1508973379184-7517410fb0bc?auto=format&fit=crop&w=900&q=80",
+    showOnTop: true,
   },
   {
     id: "event-002",
@@ -98,6 +99,7 @@ export const eventInfo: EventInfo[] = [
     participationRule: "当日の観戦チケットが必要",
     imageUrl:
       "https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=900&q=80",
+    showOnTop: true,
   },
   {
     id: "event-003",
@@ -111,6 +113,7 @@ export const eventInfo: EventInfo[] = [
     description: "指定エリアからウォーミングアップを見学できます。",
     imageUrl:
       "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=900&q=80",
+    showOnTop: true,
   },
   {
     id: "event-004",
@@ -125,6 +128,7 @@ export const eventInfo: EventInfo[] = [
     participationRule: "事前購入者特典",
     imageUrl:
       "https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=900&q=80",
+    showOnTop: true,
   },
 ];
 
@@ -207,6 +211,7 @@ export const foodItems: FoodItem[] = [
     genre: "軽食",
     price: 850,
     description: "厚切りカツと特製ソースの試合日限定サンドです。",
+    showOnTop: true,
   },
   {
     id: "item-002",
@@ -216,6 +221,7 @@ export const foodItems: FoodItem[] = [
     genre: "スナック",
     price: 550,
     description: "地元産じゃがいもを使った食べ歩きメニューです。",
+    showOnTop: true,
   },
   {
     id: "item-003",
@@ -225,6 +231,7 @@ export const foodItems: FoodItem[] = [
     genre: "ご飯もの",
     price: 1000,
     description: "辛さ控えめで家族でも楽しめる看板カレーです。",
+    showOnTop: true,
   },
   {
     id: "item-004",
@@ -234,6 +241,7 @@ export const foodItems: FoodItem[] = [
     genre: "ドリンク",
     price: 500,
     description: "さっぱり飲める自家製レモネードです。",
+    showOnTop: false,
   },
 ];
 
@@ -248,6 +256,7 @@ export const goodsItems: GoodsItem[] = [
     isNew: true,
     imageUrl:
       "https://images.unsplash.com/photo-1523398002811-999ca8dec234?auto=format&fit=crop&w=900&q=80",
+    showOnTop: true,
   },
   {
     id: "goods-002",
@@ -259,6 +268,7 @@ export const goodsItems: GoodsItem[] = [
     isNew: false,
     imageUrl:
       "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=900&q=80",
+    showOnTop: false,
   },
 ];
 

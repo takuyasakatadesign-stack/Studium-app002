@@ -14,6 +14,7 @@ import type {
   FoodItem,
   GateInfo,
   GoodsItem,
+  EventInfo,
   MatchScopedData,
   NewsItem,
   Shop,
@@ -29,6 +30,7 @@ type StadiumDataContextValue = {
   data: MatchScopedData;
   isHydrated: boolean;
   resetData: () => void;
+  setEventInfo: Dispatch<SetStateAction<EventInfo[]>>;
   setFoodItems: Dispatch<SetStateAction<FoodItem[]>>;
   setGates: Dispatch<SetStateAction<GateInfo[]>>;
   setGoodsItems: Dispatch<SetStateAction<GoodsItem[]>>;
@@ -87,6 +89,11 @@ export function StadiumDataProvider({
         setData(initialData);
         window.localStorage.removeItem(storageKey);
       },
+      setEventInfo: (action) =>
+        setData((current) => ({
+          ...current,
+          eventInfo: resolve(action, current.eventInfo),
+        })),
       setFoodItems: (action) =>
         setData((current) => ({
           ...current,

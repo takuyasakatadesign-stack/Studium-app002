@@ -37,10 +37,15 @@ export default function Home() {
     shops,
     timelineItems,
   } = data;
-  const featuredFoods = foodItems.slice(0, 3);
-  const specialEvents = eventInfo.filter((event) => event.category === "special");
-  const basicEvents = eventInfo.filter((event) => event.category !== "special");
-  const newGoods = goodsItems.filter((item) => item.isNew);
+  const topEvents = eventInfo.filter((event) => event.showOnTop !== false);
+  const featuredFoods = foodItems
+    .filter((item) => item.showOnTop !== false)
+    .slice(0, 3);
+  const specialEvents = topEvents.filter((event) => event.category === "special");
+  const basicEvents = topEvents.filter((event) => event.category !== "special");
+  const newGoods = goodsItems.filter(
+    (item) => item.isNew && item.showOnTop !== false,
+  );
 
   return (
     <div className="-mx-4 -my-8 bg-slate-950 text-white sm:-mx-6 lg:-mx-8">
@@ -235,7 +240,18 @@ export default function Home() {
                 return (
                   <Card key={food.id} className="rounded-lg border-0 shadow-sm">
                     <CardContent className="space-y-4 p-4">
-                      <div className="flex aspect-[4/3] items-end rounded-md bg-[linear-gradient(135deg,#0f766e,#f59e0b)] p-4 text-white">
+                      <div
+                        className="flex aspect-[4/3] items-end overflow-hidden rounded-md bg-[linear-gradient(135deg,#0f766e,#f59e0b)] p-4 text-white"
+                        style={
+                          food.imageUrl
+                            ? {
+                                backgroundImage: `linear-gradient(180deg, rgba(15,23,42,0.1), rgba(15,23,42,0.78)), url('${food.imageUrl}')`,
+                                backgroundPosition: "center",
+                                backgroundSize: "cover",
+                              }
+                            : undefined
+                        }
+                      >
                         <div>
                           <Badge className="bg-white text-slate-950 hover:bg-white">
                             {food.genre}

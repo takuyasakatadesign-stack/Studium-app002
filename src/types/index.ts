@@ -42,6 +42,7 @@ export type EventInfo = {
   description: string;
   participationRule?: string;
   imageUrl?: string;
+  showOnTop?: boolean;
 };
 
 export type Shop = {
@@ -68,6 +69,7 @@ export type FoodItem = {
   price: number;
   description: string;
   imageUrl?: string;
+  showOnTop?: boolean;
 };
 
 export type GoodsItem = {
@@ -79,6 +81,7 @@ export type GoodsItem = {
   description: string;
   isNew: boolean;
   imageUrl?: string;
+  showOnTop?: boolean;
 };
 
 export type NewsItem = {
