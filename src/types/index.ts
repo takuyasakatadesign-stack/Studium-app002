@@ -41,6 +41,7 @@ export type EventInfo = {
   endTime?: string;
   description: string;
   participationRule?: string;
+  imageUrl?: string;
 };
 
 export type Shop = {
@@ -77,6 +78,7 @@ export type GoodsItem = {
   saleLocation: string;
   description: string;
   isNew: boolean;
+  imageUrl?: string;
 };
 
 export type NewsItem = {
@@ -103,6 +105,7 @@ export type AccessInfo = {
   train: string;
   bus: string;
   parking: string;
+  mapImageUrl?: string;
 };
 
 export type GateInfo = {

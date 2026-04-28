@@ -45,52 +45,92 @@ export default function Home() {
   return (
     <div className="-mx-4 -my-8 bg-slate-950 text-white sm:-mx-6 lg:-mx-8">
       <section
-        className="relative overflow-hidden px-4 pb-8 pt-8 sm:px-6 lg:px-8"
+        className="relative overflow-hidden px-4 pb-10 pt-8 sm:px-6 lg:px-8"
         style={{
           backgroundImage:
-            "linear-gradient(135deg, rgba(8, 13, 34, 0.96), rgba(13, 42, 83, 0.84) 42%, rgba(184, 28, 28, 0.78)), url('https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1600&q=80')",
+            "linear-gradient(115deg, rgba(8, 13, 34, 0.94), rgba(15, 118, 110, 0.74) 46%, rgba(190, 18, 60, 0.74)), url('https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1800&q=80')",
           backgroundPosition: "center",
           backgroundSize: "cover",
         }}
       >
-        <div className="mx-auto max-w-6xl">
-          <div className="max-w-3xl space-y-6 py-10 md:py-16">
-            <Badge className="bg-white text-slate-950 hover:bg-white">
-              {currentMatch.matchName}
-            </Badge>
-            <div className="space-y-4">
-              <p className="text-sm font-semibold tracking-[0.18em] text-sky-200">
-                {currentMatch.round}
-              </p>
-              <h1 className="text-4xl font-semibold tracking-normal md:text-6xl">
-                {currentMatch.homeTeam}
-                <span className="block text-2xl text-sky-100 md:text-4xl">
-                  vs {currentMatch.opponent}
-                </span>
-              </h1>
+        <div className="mx-auto max-w-6xl py-6 md:py-10">
+          <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+            <div className="max-w-3xl space-y-6 py-8 md:py-14">
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge className="bg-amber-300 text-slate-950 hover:bg-amber-300">
+                  {currentMatch.matchName}
+                </Badge>
+                <Badge className="bg-white text-slate-950 hover:bg-white">
+                  {currentMatch.round}
+                </Badge>
+              </div>
+              <div className="space-y-4">
+                <p className="text-sm font-semibold text-amber-100">
+                  スタジアムで過ごす一日を、ここから。
+                </p>
+                <h1 className="text-4xl font-semibold tracking-normal md:text-6xl">
+                  {currentMatch.homeTeam}
+                  <span className="block text-2xl text-amber-100 md:text-4xl">
+                    vs {currentMatch.opponent}
+                  </span>
+                </h1>
+                <p className="max-w-2xl text-base leading-7 text-slate-100 md:text-lg">
+                  イベント、グルメ、グッズ、アクセス情報をまとめてチェック。開門前から試合後まで、ホームゲームをまるごと楽しめます。
+                </p>
+              </div>
+              <div className="grid gap-3 text-sm sm:grid-cols-3">
+                <MatchInfo icon={CalendarDays} label="開催日" value={currentMatch.date} />
+                <MatchInfo icon={Clock} label="キックオフ" value={currentMatch.kickoffTime} />
+                <MatchInfo icon={MapPin} label="会場" value={currentMatch.venue} />
+              </div>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Button asChild className="bg-amber-300 text-slate-950 hover:bg-amber-200">
+                  <Link href="#events">
+                    イベントを見る
+                    <Sparkles className="size-4" />
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  className="border-white/60 bg-white/10 text-white hover:bg-white/20"
+                  variant="outline"
+                >
+                  <Link href="/gourmet">
+                    グルメを探す
+                    <Utensils className="size-4" />
+                  </Link>
+                </Button>
+              </div>
             </div>
-            <div className="grid gap-3 text-sm sm:grid-cols-3">
-              <MatchInfo icon={CalendarDays} label="開催日" value={currentMatch.date} />
-              <MatchInfo icon={Clock} label="キックオフ" value={currentMatch.kickoffTime} />
-              <MatchInfo icon={MapPin} label="会場" value={currentMatch.venue} />
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button asChild className="bg-white text-slate-950 hover:bg-sky-100">
-                <Link href="#highlights">
-                  本日の見どころ
-                  <ArrowRight className="size-4" />
-                </Link>
-              </Button>
-              <Button
-                asChild
-                className="border-white/50 bg-white/10 text-white hover:bg-white/20"
-                variant="outline"
-              >
-                <Link href="/gourmet">
-                  グルメを探す
-                  <Utensils className="size-4" />
-                </Link>
-              </Button>
+
+            <div className="rounded-lg border border-white/20 bg-slate-950/70 p-4 shadow-2xl backdrop-blur">
+              <div className="flex items-center gap-2 text-sm font-semibold text-amber-200">
+                <Trophy className="size-4" />
+                MATCHDAY PICKS
+              </div>
+              <div className="mt-4 grid gap-3">
+                <HeroPick
+                  icon={Sparkles}
+                  label="場外イベント"
+                  title={specialEvents[0]?.title ?? "イベント開催"}
+                  detail={specialEvents[0]?.startTime ?? "開門後"}
+                  href="#events"
+                />
+                <HeroPick
+                  icon={Utensils}
+                  label="限定グルメ"
+                  title={featuredFoods[0]?.name ?? "スタジアムグルメ"}
+                  detail={`${shops.length}店舗が出店`}
+                  href="#gourmet"
+                />
+                <HeroPick
+                  icon={Shirt}
+                  label="新作グッズ"
+                  title={newGoods[0]?.name ?? "試合日グッズ"}
+                  detail="数量限定販売"
+                  href="#goods"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -98,23 +138,45 @@ export default function Home() {
 
       <main className="bg-slate-50 px-4 py-8 text-slate-950 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl space-y-10">
+          <section className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+            <div className="space-y-3">
+              <SectionTitle icon={MapPin} title="会場マップ" label="STADIUM MAP" />
+              <p className="text-sm leading-6 text-slate-600">
+                入場ゲート、イベントエリア、グルメ売店の位置を事前に確認できます。
+              </p>
+            </div>
+            <div className="overflow-hidden rounded-lg border bg-white shadow-sm">
+              {accessInfo.mapImageUrl ? (
+                <img
+                  alt={`${accessInfo.stadiumName} 会場マップ`}
+                  className="aspect-[16/9] w-full object-cover"
+                  src={accessInfo.mapImageUrl}
+                />
+              ) : (
+                <div className="flex aspect-[16/9] items-center justify-center bg-slate-100 text-sm font-medium text-slate-500">
+                  会場マップ画像
+                </div>
+              )}
+            </div>
+          </section>
+
           <section id="highlights" className="grid gap-3 md:grid-cols-3">
             <HighlightCard
               icon={Sparkles}
-              title="イベント"
-              description="場外ステージとスポンサー体験ブースを開催。"
+              title="試合前から楽しめる"
+              description="ステージ、体験ブース、集合イベントをまとめて確認。"
               href="#events"
             />
             <HighlightCard
               icon={Utensils}
-              title="グルメ"
-              description={`${shops.length}店舗の限定メニューをチェック。`}
+              title="食べたいものが見つかる"
+              description={`${shops.length}店舗の限定メニューと場所をチェック。`}
               href="#gourmet"
             />
             <HighlightCard
               icon={Shirt}
-              title="グッズ"
-              description="試合日限定の新商品を販売します。"
+              title="記念に持ち帰る"
+              description="新商品と購入特典を試合前に確認。"
               href="#goods"
             />
           </section>
@@ -226,17 +288,26 @@ export default function Home() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {newGoods.map((item) => (
-                  <div key={item.id} className="rounded-md bg-white/10 p-4">
-                    <Badge className="bg-red-500 text-white hover:bg-red-500">
-                      NEW
-                    </Badge>
-                    <h3 className="mt-3 text-lg font-semibold">{item.name}</h3>
-                    <p className="mt-1 text-sm text-slate-200">{item.description}</p>
-                    <div className="mt-3 flex items-center justify-between gap-3 text-sm">
-                      <span>{item.saleLocation}</span>
-                      <span className="font-semibold">
-                        {item.price.toLocaleString()}円
-                      </span>
+                  <div key={item.id} className="overflow-hidden rounded-md bg-white/10">
+                    {item.imageUrl ? (
+                      <img
+                        alt={item.name}
+                        className="aspect-[16/9] w-full object-cover"
+                        src={item.imageUrl}
+                      />
+                    ) : null}
+                    <div className="p-4">
+                      <Badge className="bg-red-500 text-white hover:bg-red-500">
+                        NEW
+                      </Badge>
+                      <h3 className="mt-3 text-lg font-semibold">{item.name}</h3>
+                      <p className="mt-1 text-sm text-slate-200">{item.description}</p>
+                      <div className="mt-3 flex items-center justify-between gap-3 text-sm">
+                        <span>{item.saleLocation}</span>
+                        <span className="font-semibold">
+                          {item.price.toLocaleString()}円
+                        </span>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -347,6 +418,37 @@ function MatchInfo({
   );
 }
 
+function HeroPick({
+  detail,
+  href,
+  icon: Icon,
+  label,
+  title,
+}: {
+  detail: string;
+  href: string;
+  icon: typeof CalendarDays;
+  label: string;
+  title: string;
+}) {
+  return (
+    <Link
+      className="group grid grid-cols-[44px_1fr_auto] items-center gap-3 rounded-md border border-white/15 bg-white/10 p-3 text-white transition-colors hover:bg-white/20"
+      href={href}
+    >
+      <div className="flex size-11 items-center justify-center rounded-md bg-amber-300 text-slate-950">
+        <Icon className="size-5" />
+      </div>
+      <div className="min-w-0">
+        <p className="text-xs font-semibold text-amber-100">{label}</p>
+        <p className="truncate font-semibold">{title}</p>
+        <p className="text-xs text-slate-300">{detail}</p>
+      </div>
+      <ArrowRight className="size-4 text-amber-100 transition-transform group-hover:translate-x-0.5" />
+    </Link>
+  );
+}
+
 function SectionTitle({
   icon: Icon,
   title,
@@ -423,15 +525,24 @@ function EventGroup({
     <div className="space-y-3">
       <h3 className="text-sm font-semibold text-slate-500">{title}</h3>
       {events.map((event) => (
-        <div key={event.id} className="rounded-md border bg-white p-4">
-          <div className="flex items-center justify-between gap-3">
-            <p className="font-semibold">{event.title}</p>
-            <Badge variant="secondary">{event.startTime}</Badge>
+        <div key={event.id} className="overflow-hidden rounded-md border bg-white">
+          {event.imageUrl ? (
+            <img
+              alt={event.title}
+              className="aspect-[16/9] w-full object-cover"
+              src={event.imageUrl}
+            />
+          ) : null}
+          <div className="p-4">
+            <div className="flex items-center justify-between gap-3">
+              <p className="font-semibold">{event.title}</p>
+              <Badge variant="secondary">{event.startTime}</Badge>
+            </div>
+            <p className="mt-2 text-sm text-slate-600">{event.description}</p>
+            <p className="mt-2 text-xs font-medium text-slate-500">
+              {event.location}
+            </p>
           </div>
-          <p className="mt-2 text-sm text-slate-600">{event.description}</p>
-          <p className="mt-2 text-xs font-medium text-slate-500">
-            {event.location}
-          </p>
         </div>
       ))}
     </div>

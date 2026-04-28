@@ -82,6 +82,8 @@ export const eventInfo: EventInfo[] = [
     endTime: "16:30",
     description: "地域団体によるパフォーマンスを実施します。",
     participationRule: "観覧自由",
+    imageUrl:
+      "https://images.unsplash.com/photo-1508973379184-7517410fb0bc?auto=format&fit=crop&w=900&q=80",
   },
   {
     id: "event-002",
@@ -94,6 +96,8 @@ export const eventInfo: EventInfo[] = [
     endTime: "18:30",
     description: "来場者向け抽選会と体験コンテンツを提供します。",
     participationRule: "当日の観戦チケットが必要",
+    imageUrl:
+      "https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=900&q=80",
   },
   {
     id: "event-003",
@@ -105,6 +109,8 @@ export const eventInfo: EventInfo[] = [
     startTime: "18:10",
     endTime: "18:35",
     description: "指定エリアからウォーミングアップを見学できます。",
+    imageUrl:
+      "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=900&q=80",
   },
   {
     id: "event-004",
@@ -117,6 +123,8 @@ export const eventInfo: EventInfo[] = [
     endTime: "19:10",
     description: "参加者受付、説明、ピッチ入場、解散までを実施します。",
     participationRule: "事前購入者特典",
+    imageUrl:
+      "https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=900&q=80",
   },
 ];
 
@@ -238,6 +246,8 @@ export const goodsItems: GoodsItem[] = [
     saleLocation: "グッズ売店 メインスタンド",
     description: "試合日限定デザインのキーホルダーです。",
     isNew: true,
+    imageUrl:
+      "https://images.unsplash.com/photo-1523398002811-999ca8dec234?auto=format&fit=crop&w=900&q=80",
   },
   {
     id: "goods-002",
@@ -247,6 +257,8 @@ export const goodsItems: GoodsItem[] = [
     saleLocation: "グッズ売店 全店",
     description: "応援定番アイテムです。",
     isNew: false,
+    imageUrl:
+      "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=900&q=80",
   },
 ];
 
@@ -257,6 +269,8 @@ export const accessInfo: AccessInfo = {
   train: "青空線 スタジアム前駅から徒歩8分",
   bus: "青空駅東口から臨時シャトルバスを運行",
   parking: "事前予約制。試合当日の一般販売はありません。",
+  mapImageUrl:
+    "https://images.unsplash.com/photo-1577223625816-7546f13df25d?auto=format&fit=crop&w=1400&q=80",
 };
 
 export const faqItems: FAQItem[] = [
