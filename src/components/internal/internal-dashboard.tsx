@@ -42,6 +42,12 @@ export function InternalDashboard() {
   const documents = internalOperationInfo.documents ?? [];
   const staffAssignments = internalOperationInfo.staffAssignments ?? [];
   const equipmentPlacements = internalOperationInfo.equipmentPlacements ?? [];
+  const gates = internalOperationInfo.gates ?? [];
+  const distributions = internalOperationInfo.distributions ?? [];
+  const vipRooms = internalOperationInfo.vipRooms ?? [];
+  const tickets = internalOperationInfo.tickets ?? [];
+  const mediaVisits = internalOperationInfo.mediaVisits ?? [];
+  const sponsorNotes = internalOperationInfo.sponsorNotes ?? "";
 
   return (
     <div className="space-y-8">
@@ -136,7 +142,7 @@ export function InternalDashboard() {
         <DashboardSection icon={DoorOpen} title="入場口・ゲート管理">
           <DataTable
             columns={["ゲート名", "開門時刻", "レーン構成", "入場対象者"]}
-            rows={internalOperationInfo.gates.map((gate) => [
+            rows={gates.map((gate) => [
               gate.name,
               gate.openTime,
               gate.lanes,
@@ -170,7 +176,7 @@ export function InternalDashboard() {
         <DashboardSection icon={Megaphone} title="配布物管理">
           <DataTable
             columns={["配布物名", "配布場所", "数量", "納品情報", "担当部署"]}
-            rows={internalOperationInfo.distributions.map((item) => [
+            rows={distributions.map((item) => [
               item.name,
               item.location,
               `${item.quantity.toLocaleString()}部`,
@@ -244,7 +250,7 @@ export function InternalDashboard() {
         <DashboardSection icon={Users} title="VIP・諸室管理">
           <DataTable
             columns={["諸室名", "利用者", "人数", "サービス", "備考"]}
-            rows={internalOperationInfo.vipRooms.map((room) => [
+            rows={vipRooms.map((room) => [
               room.roomName,
               room.userName,
               `${room.guestCount}名`,
@@ -254,14 +260,14 @@ export function InternalDashboard() {
           />
         </DashboardSection>
         <DashboardSection icon={FileText} title="スポンサー伝達事項">
-          <Metric label="伝達メモ" value={internalOperationInfo.sponsorNotes} />
+          <Metric label="伝達メモ" value={sponsorNotes} />
         </DashboardSection>
       </section>
 
       <DashboardSection icon={Ticket} title="チケット情報">
         <DataTable
           columns={["特殊チケット名", "金額", "枚数", "特典", "引き換え方法"]}
-          rows={internalOperationInfo.tickets.map((ticketInfo) => [
+          rows={tickets.map((ticketInfo) => [
             ticketInfo.name,
             `${ticketInfo.price.toLocaleString()}円`,
             `${ticketInfo.quantity.toLocaleString()}枚`,
@@ -312,7 +318,7 @@ export function InternalDashboard() {
         <DashboardSection icon={Megaphone} title="メディア来場情報">
           <DataTable
             columns={["メディア名", "種類", "代表者・人数", "控室", "観戦場所"]}
-            rows={internalOperationInfo.mediaVisits.map((item) => [
+            rows={mediaVisits.map((item) => [
               item.mediaName,
               item.mediaType,
               `${item.representative} / ${item.peopleCount}名`,

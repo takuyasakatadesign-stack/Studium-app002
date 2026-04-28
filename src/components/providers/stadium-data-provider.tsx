@@ -75,7 +75,7 @@ export function StadiumDataProvider({
     }
 
     try {
-      return JSON.parse(saved) as MatchScopedData;
+      return mergeMatchData(initialData, JSON.parse(saved) as Partial<MatchScopedData>);
     } catch {
       window.localStorage.removeItem(storageKey);
       return initialData;
@@ -252,4 +252,75 @@ export function useStadiumData() {
   }
 
   return context;
+}
+
+function mergeMatchData(
+  initialData: MatchScopedData,
+  savedData: Partial<MatchScopedData>,
+): MatchScopedData {
+  return {
+    ...initialData,
+    ...savedData,
+    match: savedData.match ?? initialData.match,
+    nextMatch: savedData.nextMatch ?? initialData.nextMatch,
+    timelineItems: savedData.timelineItems ?? initialData.timelineItems,
+    eventInfo: savedData.eventInfo ?? initialData.eventInfo,
+    shops: savedData.shops ?? initialData.shops,
+    foodItems: savedData.foodItems ?? initialData.foodItems,
+    goodsItems: savedData.goodsItems ?? initialData.goodsItems,
+    accessInfo: {
+      ...initialData.accessInfo,
+      ...savedData.accessInfo,
+    },
+    faqItems: savedData.faqItems ?? initialData.faqItems,
+    newsItems: savedData.newsItems ?? initialData.newsItems,
+    users: savedData.users ?? initialData.users,
+    internalOperationInfo: {
+      ...initialData.internalOperationInfo,
+      ...savedData.internalOperationInfo,
+      weather:
+        savedData.internalOperationInfo?.weather ??
+        initialData.internalOperationInfo.weather,
+      attendance:
+        savedData.internalOperationInfo?.attendance ??
+        initialData.internalOperationInfo.attendance,
+      gates:
+        savedData.internalOperationInfo?.gates ??
+        initialData.internalOperationInfo.gates,
+      vipRooms:
+        savedData.internalOperationInfo?.vipRooms ??
+        initialData.internalOperationInfo.vipRooms,
+      staffAssignments:
+        savedData.internalOperationInfo?.staffAssignments ??
+        initialData.internalOperationInfo.staffAssignments,
+      equipmentPlacements:
+        savedData.internalOperationInfo?.equipmentPlacements ??
+        initialData.internalOperationInfo.equipmentPlacements,
+      staffEquipment:
+        savedData.internalOperationInfo?.staffEquipment ??
+        initialData.internalOperationInfo.staffEquipment,
+      tickets:
+        savedData.internalOperationInfo?.tickets ??
+        initialData.internalOperationInfo.tickets,
+      distributions:
+        savedData.internalOperationInfo?.distributions ??
+        initialData.internalOperationInfo.distributions,
+      sponsors:
+        savedData.internalOperationInfo?.sponsors ??
+        initialData.internalOperationInfo.sponsors,
+      sponsorNotes:
+        savedData.internalOperationInfo?.sponsorNotes ??
+        initialData.internalOperationInfo.sponsorNotes,
+      mediaVisits:
+        savedData.internalOperationInfo?.mediaVisits ??
+        initialData.internalOperationInfo.mediaVisits,
+      mapAssets: {
+        ...initialData.internalOperationInfo.mapAssets,
+        ...savedData.internalOperationInfo?.mapAssets,
+      },
+      documents:
+        savedData.internalOperationInfo?.documents ??
+        initialData.internalOperationInfo.documents,
+    },
+  };
 }
