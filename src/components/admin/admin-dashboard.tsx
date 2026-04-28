@@ -26,10 +26,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useStadiumData } from "@/components/providers/stadium-data-provider";
 import type {
+  DistributionInfo,
   EquipmentPlacementInfo,
   EventInfo,
   FoodItem,
   GoodsItem,
+  IrregularOperationItem,
   MediaVisitInfo,
   OperationDocument,
   Shop,
@@ -88,11 +90,13 @@ type AdminTab = (typeof tabs)[number]["value"];
 export function AdminDashboard() {
   const {
     data,
+    setDistributions,
     setEquipmentPlacements,
     setEventInfo,
     setFoodItems,
     setGates,
     setGoodsItems,
+    setIrregularItems,
     setMediaVisits,
     setOperationDocuments,
     setOperationMapAssets,
@@ -110,6 +114,8 @@ export function AdminDashboard() {
     data.internalOperationInfo.staffAssignments ?? defaultStaffAssignments();
   const equipmentPlacements =
     data.internalOperationInfo.equipmentPlacements ?? defaultEquipmentPlacements();
+  const distributions = data.internalOperationInfo.distributions ?? [];
+  const irregularItems = data.internalOperationInfo.irregularItems ?? [];
   const goods = data.goodsItems;
   const shopList = data.shops;
   const foods = data.foodItems;
@@ -471,24 +477,184 @@ export function AdminDashboard() {
                 actionLabel="配布物を保存"
                 onSave={() => save("配布物")}
                 title="配布物"
-                description="配布物は運営担当で管理します。現在は仮入力欄です。"
+                description="配布物名、数量、配布場所、納品情報を管理します。"
+                headerAction={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() =>
+                      setDistributions((items) => [...items, createDistributionItem()])
+                    }
+                  >
+                    <Plus className="size-4" />
+                    配布物を追加
+                  </Button>
+                }
               >
-                <div className="grid gap-4 md:grid-cols-2">
-                  <Field label="配布物名">
-                    <Input defaultValue="マッチデープログラム" />
-                  </Field>
-                  <Field label="数量">
-                    <Input defaultValue="12,000部" />
-                  </Field>
-                  <Field label="配布場所">
-                    <Input defaultValue="各入場ゲート" />
-                  </Field>
-                  <Field label="納品情報">
-                    <Input defaultValue="試合前日 15:00 納品" />
-                  </Field>
+                <div className="grid gap-4">
+                  {distributions.map((item, index) => (
+                    <div className="grid gap-3 rounded-md border p-3" key={item.id}>
+                      <div className="grid gap-3 md:grid-cols-2">
+                        <Field label="配布物名">
+                          <Input
+                            value={item.name}
+                            onChange={(event) =>
+                              updateArrayItem(setDistributions, index, {
+                                name: event.target.value,
+                              })
+                            }
+                          />
+                        </Field>
+                        <Field label="数量">
+                          <Input
+                            type="number"
+                            value={item.quantity}
+                            onChange={(event) =>
+                              updateArrayItem(setDistributions, index, {
+                                quantity: Number(event.target.value),
+                              })
+                            }
+                          />
+                        </Field>
+                        <Field label="配布場所">
+                          <Input
+                            value={item.location}
+                            onChange={(event) =>
+                              updateArrayItem(setDistributions, index, {
+                                location: event.target.value,
+                              })
+                            }
+                          />
+                        </Field>
+                        <Field label="担当部署">
+                          <Input
+                            value={item.department}
+                            onChange={(event) =>
+                              updateArrayItem(setDistributions, index, {
+                                department: event.target.value,
+                              })
+                            }
+                          />
+                        </Field>
+                      </div>
+                      <Field label="納品情報">
+                        <Textarea
+                          value={item.deliveryInfo}
+                          onChange={(event) =>
+                            updateArrayItem(setDistributions, index, {
+                              deliveryInfo: event.target.value,
+                            })
+                          }
+                        />
+                      </Field>
+                    </div>
+                  ))}
+                  {distributions.length === 0 ? (
+                    <div className="rounded-md border bg-muted/30 p-4 text-sm text-muted-foreground">
+                      配布物はまだ登録されていません。
+                    </div>
+                  ) : null}
                 </div>
               </AdminCard>
             </div>
+
+            <AdminCard
+              actionLabel="イレギュラー対応を保存"
+              onSave={() => save("イレギュラー対応")}
+              title="イレギュラー対応項目"
+              description="想定外の運用、追加タスク、緊急連絡などを自由に追加できます。"
+              headerAction={
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() =>
+                    setIrregularItems((items) => [
+                      ...items,
+                      createIrregularItem(),
+                    ])
+                  }
+                >
+                  <Plus className="size-4" />
+                  項目を追加
+                </Button>
+              }
+            >
+              <div className="grid gap-4 xl:grid-cols-2">
+                {irregularItems.map((item, index) => (
+                  <div className="grid gap-3 rounded-md border p-4" key={item.id}>
+                    <div className="grid gap-3 md:grid-cols-2">
+                      <Field label="件名">
+                        <Input
+                          value={item.title}
+                          onChange={(event) =>
+                            updateArrayItem(setIrregularItems, index, {
+                              title: event.target.value,
+                            })
+                          }
+                        />
+                      </Field>
+                      <Field label="カテゴリ">
+                        <Input
+                          placeholder="天候対応 / 導線変更 / 緊急連絡"
+                          value={item.category}
+                          onChange={(event) =>
+                            updateArrayItem(setIrregularItems, index, {
+                              category: event.target.value,
+                            })
+                          }
+                        />
+                      </Field>
+                      <Field label="担当者">
+                        <Input
+                          value={item.owner}
+                          onChange={(event) =>
+                            updateArrayItem(setIrregularItems, index, {
+                              owner: event.target.value,
+                            })
+                          }
+                        />
+                      </Field>
+                      <Field label="状態">
+                        <Input
+                          placeholder="未対応 / 確認中 / 対応済み"
+                          value={item.status}
+                          onChange={(event) =>
+                            updateArrayItem(setIrregularItems, index, {
+                              status: event.target.value,
+                            })
+                          }
+                        />
+                      </Field>
+                    </div>
+                    <Field label="場所">
+                      <Input
+                        value={item.location ?? ""}
+                        onChange={(event) =>
+                          updateArrayItem(setIrregularItems, index, {
+                            location: event.target.value,
+                          })
+                        }
+                      />
+                    </Field>
+                    <Field label="内容・対応メモ">
+                      <Textarea
+                        value={item.note}
+                        onChange={(event) =>
+                          updateArrayItem(setIrregularItems, index, {
+                            note: event.target.value,
+                          })
+                        }
+                      />
+                    </Field>
+                  </div>
+                ))}
+                {irregularItems.length === 0 ? (
+                  <div className="rounded-md border bg-muted/30 p-4 text-sm text-muted-foreground">
+                    イレギュラー対応項目はまだ登録されていません。
+                  </div>
+                ) : null}
+              </div>
+            </AdminCard>
 
             <div className="grid gap-4 lg:grid-cols-2">
               <AdminCard
@@ -1857,6 +2023,29 @@ function createEquipmentPlacement(): EquipmentPlacementInfo {
     id: `equipment-placement-${Date.now()}`,
     name: "",
     quantity: "",
+    location: "",
+    note: "",
+  };
+}
+
+function createDistributionItem(): DistributionInfo {
+  return {
+    id: `distribution-${Date.now()}`,
+    name: "",
+    location: "",
+    quantity: 0,
+    deliveryInfo: "",
+    department: "運営担当",
+  };
+}
+
+function createIrregularItem(): IrregularOperationItem {
+  return {
+    id: `irregular-${Date.now()}`,
+    title: "",
+    category: "",
+    owner: "",
+    status: "未対応",
     location: "",
     note: "",
   };

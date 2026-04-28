@@ -174,6 +174,16 @@ export type DistributionInfo = {
   department: string;
 };
 
+export type IrregularOperationItem = {
+  id: string;
+  title: string;
+  category: string;
+  owner: string;
+  status: string;
+  location?: string;
+  note: string;
+};
+
 export type SponsorInfo = {
   id: string;
   name: string;
@@ -230,6 +240,7 @@ export type InternalOperationInfo = {
   mediaVisits: MediaVisitInfo[];
   mapAssets: OperationMapAssets;
   documents: OperationDocument[];
+  irregularItems: IrregularOperationItem[];
 };
 
 export type MatchScopedData = {

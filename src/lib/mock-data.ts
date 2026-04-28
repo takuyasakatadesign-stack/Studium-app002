@@ -479,6 +479,17 @@ export const internalOperationInfo: InternalOperationInfo = {
       "https://images.unsplash.com/photo-1519751138087-5bf79df62d5b?auto=format&fit=crop&w=1400&q=80",
   },
   documents: [],
+  irregularItems: [
+    {
+      id: "irregular-001",
+      title: "雨天時の待機列変更",
+      category: "天候対応",
+      owner: "運営担当",
+      status: "確認中",
+      location: "南広場",
+      note: "降雨が強い場合は待機列を屋根下導線へ変更。判断は開門2時間前。",
+    },
+  ],
 };
 
 export const adminTabs = [

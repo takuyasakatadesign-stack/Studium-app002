@@ -48,6 +48,7 @@ export function InternalDashboard() {
   const tickets = internalOperationInfo.tickets ?? [];
   const mediaVisits = internalOperationInfo.mediaVisits ?? [];
   const sponsorNotes = internalOperationInfo.sponsorNotes ?? "";
+  const irregularItems = internalOperationInfo.irregularItems ?? [];
 
   return (
     <div className="space-y-8">
@@ -186,6 +187,28 @@ export function InternalDashboard() {
           />
         </DashboardSection>
       </section>
+
+      <DashboardSection
+        icon={Megaphone}
+        title="イレギュラー対応項目"
+        description="管理画面で自由追加された想定外対応・追加タスクです。"
+      >
+        {irregularItems.length > 0 ? (
+          <DataTable
+            columns={["件名", "カテゴリ", "担当者", "状態", "場所", "内容・メモ"]}
+            rows={irregularItems.map((item) => [
+              item.title,
+              item.category,
+              item.owner,
+              item.status,
+              item.location ?? "-",
+              item.note,
+            ])}
+          />
+        ) : (
+          <EmptyBox text="登録済みのイレギュラー対応項目はありません。" />
+        )}
+      </DashboardSection>
 
       <DashboardSection
         icon={ImageIcon}

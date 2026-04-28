@@ -16,6 +16,8 @@ import type {
   GoodsItem,
   EventInfo,
   EquipmentPlacementInfo,
+  DistributionInfo,
+  IrregularOperationItem,
   MatchScopedData,
   MediaVisitInfo,
   NewsItem,
@@ -36,10 +38,12 @@ type StadiumDataContextValue = {
   isHydrated: boolean;
   resetData: () => void;
   setEventInfo: Dispatch<SetStateAction<EventInfo[]>>;
+  setDistributions: Dispatch<SetStateAction<DistributionInfo[]>>;
   setEquipmentPlacements: Dispatch<SetStateAction<EquipmentPlacementInfo[]>>;
   setFoodItems: Dispatch<SetStateAction<FoodItem[]>>;
   setGates: Dispatch<SetStateAction<GateInfo[]>>;
   setGoodsItems: Dispatch<SetStateAction<GoodsItem[]>>;
+  setIrregularItems: Dispatch<SetStateAction<IrregularOperationItem[]>>;
   setMediaVisits: Dispatch<SetStateAction<MediaVisitInfo[]>>;
   setNewsItems: Dispatch<SetStateAction<NewsItem[]>>;
   setOperationDocuments: Dispatch<SetStateAction<OperationDocument[]>>;
@@ -105,6 +109,17 @@ export function StadiumDataProvider({
           ...current,
           eventInfo: resolve(action, current.eventInfo),
         })),
+      setDistributions: (action) =>
+        setData((current) => ({
+          ...current,
+          internalOperationInfo: {
+            ...current.internalOperationInfo,
+            distributions: resolve(
+              action,
+              current.internalOperationInfo.distributions ?? [],
+            ),
+          },
+        })),
       setEquipmentPlacements: (action) =>
         setData((current) => ({
           ...current,
@@ -133,6 +148,17 @@ export function StadiumDataProvider({
         setData((current) => ({
           ...current,
           goodsItems: resolve(action, current.goodsItems),
+        })),
+      setIrregularItems: (action) =>
+        setData((current) => ({
+          ...current,
+          internalOperationInfo: {
+            ...current.internalOperationInfo,
+            irregularItems: resolve(
+              action,
+              current.internalOperationInfo.irregularItems ?? [],
+            ),
+          },
         })),
       setMediaVisits: (action) =>
         setData((current) => ({
@@ -321,6 +347,9 @@ function mergeMatchData(
       documents:
         savedData.internalOperationInfo?.documents ??
         initialData.internalOperationInfo.documents,
+      irregularItems:
+        savedData.internalOperationInfo?.irregularItems ??
+        initialData.internalOperationInfo.irregularItems,
     },
   };
 }
