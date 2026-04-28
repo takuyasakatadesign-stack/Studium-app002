@@ -75,6 +75,7 @@ export const eventInfo: EventInfo[] = [
     id: "event-001",
     matchId: currentMatch.id,
     category: "special",
+    eventType: "special",
     title: "ホームタウン感謝ステージ",
     department: "事業担当",
     location: "南広場ステージ",
@@ -83,6 +84,7 @@ export const eventInfo: EventInfo[] = [
     ownerName: "事業担当 山田",
     description: "地域団体によるパフォーマンスを実施します。",
     participationRule: "観覧自由",
+    tags: ["ファンサービス", "ホームタウン"],
     imageUrl:
       "https://images.unsplash.com/photo-1508973379184-7517410fb0bc?auto=format&fit=crop&w=900&q=80",
     showOnTop: true,
@@ -91,6 +93,7 @@ export const eventInfo: EventInfo[] = [
     id: "event-002",
     matchId: currentMatch.id,
     category: "booth",
+    eventType: "limited",
     title: "スポンサー体験ブース",
     department: "営業担当",
     location: "メインスタンド前",
@@ -99,6 +102,7 @@ export const eventInfo: EventInfo[] = [
     ownerName: "営業担当 佐藤",
     description: "来場者向け抽選会と体験コンテンツを提供します。",
     participationRule: "当日の観戦チケットが必要",
+    tags: ["スポンサー", "ファンサービス"],
     imageUrl:
       "https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=900&q=80",
     showOnTop: true,
@@ -107,6 +111,7 @@ export const eventInfo: EventInfo[] = [
     id: "event-003",
     matchId: currentMatch.id,
     category: "basic",
+    eventType: "basic",
     title: "選手ウォーミングアップ見学",
     department: "運営担当",
     location: "ピッチサイド",
@@ -114,6 +119,7 @@ export const eventInfo: EventInfo[] = [
     endTime: "18:35",
     ownerName: "運営担当 田中",
     description: "指定エリアからウォーミングアップを見学できます。",
+    tags: ["ファンサービス", "ピッチ"],
     imageUrl:
       "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=900&q=80",
     showOnTop: true,
@@ -122,6 +128,7 @@ export const eventInfo: EventInfo[] = [
     id: "event-004",
     matchId: currentMatch.id,
     category: "gathering",
+    eventType: "limited",
     title: "エスコートキッズ集合",
     department: "事業担当",
     location: "関係者受付前",
@@ -136,6 +143,7 @@ export const eventInfo: EventInfo[] = [
     ownerName: "事業担当 山田",
     description: "参加者受付、説明、ピッチ入場、解散までを実施します。",
     participationRule: "事前購入者特典",
+    tags: ["キッズ", "ファンサービス"],
     imageUrl:
       "https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=900&q=80",
     showOnTop: true,
@@ -419,6 +427,7 @@ export const internalOperationInfo: InternalOperationInfo = {
       quantity: 500,
       benefit: "限定ステッカー",
       exchangeMethod: "南広場チケットブースで引き換え",
+      purchaseUrl: "https://example.com/tickets/hometown",
     },
   ],
   distributions: [
@@ -471,6 +480,8 @@ export const internalOperationInfo: InternalOperationInfo = {
     },
   ],
   mapAssets: {
+    stadiumPhotoUrl:
+      "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1400&q=80",
     venueMapImageUrl:
       "https://images.unsplash.com/photo-1577223625816-7546f13df25d?auto=format&fit=crop&w=1400&q=80",
     parkingMapImageUrl:

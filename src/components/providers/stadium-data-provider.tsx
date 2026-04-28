@@ -18,6 +18,7 @@ import type {
   EquipmentPlacementInfo,
   DistributionInfo,
   IrregularOperationItem,
+  Match,
   MatchScopedData,
   MediaVisitInfo,
   NewsItem,
@@ -38,6 +39,8 @@ type StadiumDataContextValue = {
   isHydrated: boolean;
   resetData: () => void;
   setEventInfo: Dispatch<SetStateAction<EventInfo[]>>;
+  setMatch: Dispatch<SetStateAction<Match>>;
+  setNextMatch: Dispatch<SetStateAction<Match>>;
   setDistributions: Dispatch<SetStateAction<DistributionInfo[]>>;
   setEquipmentPlacements: Dispatch<SetStateAction<EquipmentPlacementInfo[]>>;
   setFoodItems: Dispatch<SetStateAction<FoodItem[]>>;
@@ -108,6 +111,16 @@ export function StadiumDataProvider({
         setData((current) => ({
           ...current,
           eventInfo: resolve(action, current.eventInfo),
+        })),
+      setMatch: (action) =>
+        setData((current) => ({
+          ...current,
+          match: resolve(action, current.match),
+        })),
+      setNextMatch: (action) =>
+        setData((current) => ({
+          ...current,
+          nextMatch: resolve(action, current.nextMatch),
         })),
       setDistributions: (action) =>
         setData((current) => ({

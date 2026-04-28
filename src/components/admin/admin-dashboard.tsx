@@ -14,7 +14,7 @@ import {
   Upload,
   Users,
 } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SaveToast } from "@/components/shared/save-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useStadiumData } from "@/components/providers/stadium-data-provider";
@@ -32,6 +33,7 @@ import type {
   FoodItem,
   GoodsItem,
   IrregularOperationItem,
+  Match,
   MediaVisitInfo,
   OperationDocument,
   Shop,
@@ -39,6 +41,14 @@ import type {
   TicketInfo,
   VipRoomInfo,
 } from "@/types";
+
+const eventTagOptions = [
+  "グッズ",
+  "グルメ",
+  "キッズ",
+  "ファンサービス",
+  "スポンサー",
+];
 
 const tabs = [
   {
@@ -97,7 +107,9 @@ export function AdminDashboard() {
     setGates,
     setGoodsItems,
     setIrregularItems,
+    setMatch,
     setMediaVisits,
+    setNextMatch,
     setOperationDocuments,
     setOperationMapAssets,
     setShops,
@@ -128,45 +140,53 @@ export function AdminDashboard() {
   const users = data.users;
   const [activeTab, setActiveTab] = useState<AdminTab>("運営担当");
   const [savedArea, setSavedArea] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const shopStaffUsers = users.filter((user) => user.role === "shop_staff");
 
   const save = (area: string) => {
     setSavedArea(area);
+    setToastMessage(`${area}の変更内容をローカル保存しました`);
   };
 
-  return (
-    <Tabs
-      orientation="vertical"
-      value={activeTab}
-      onValueChange={(value) => setActiveTab(value as AdminTab)}
-      className="grid gap-6 lg:grid-cols-[260px_1fr] lg:items-start"
-    >
-      <aside className="rounded-lg border bg-white p-3 shadow-sm">
-        <div className="px-2 pb-3">
-          <p className="text-xs font-semibold text-muted-foreground">管理メニュー</p>
-          <h2 className="mt-1 text-lg font-semibold">試合日情報編集</h2>
-        </div>
-        <TabsList className="flex h-auto w-full flex-col items-stretch gap-1 bg-transparent p-0">
-          {tabs.map((tab) => (
-            <TabsTrigger
-              className="h-auto w-full justify-start rounded-md px-3 py-3 text-left data-active:border-slate-900 data-active:bg-slate-950 data-active:text-white"
-              key={tab.value}
-              value={tab.value}
-            >
-              <tab.icon className="size-4" />
-              <span className="min-w-0">
-                <span className="block font-semibold">{tab.label}</span>
-                <span className="block truncate text-xs opacity-70">
-                  {tab.description}
-                </span>
-              </span>
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </aside>
+  const closeToast = useCallback(() => {
+    setToastMessage(null);
+  }, []);
 
-      <div className="space-y-6">
+  return (
+    <>
+      <SaveToast message={toastMessage} onClose={closeToast} />
+      <Tabs
+        orientation="vertical"
+        value={activeTab}
+        onValueChange={(value) => setActiveTab(value as AdminTab)}
+        className="grid gap-6 lg:grid-cols-[260px_1fr] lg:items-start"
+      >
+        <aside className="rounded-lg border bg-white p-3 shadow-sm">
+          <div className="px-2 pb-3">
+            <p className="text-xs font-semibold text-muted-foreground">管理メニュー</p>
+            <h2 className="mt-1 text-lg font-semibold">試合日情報編集</h2>
+          </div>
+          <TabsList className="flex h-auto w-full flex-col items-stretch gap-1 bg-transparent p-0">
+            {tabs.map((tab) => (
+              <TabsTrigger
+                className="h-auto w-full justify-start rounded-md px-3 py-3 text-left data-active:border-slate-900 data-active:bg-slate-950 data-active:text-white"
+                key={tab.value}
+                value={tab.value}
+              >
+                <tab.icon className="size-4" />
+                <span className="min-w-0">
+                  <span className="block font-semibold">{tab.label}</span>
+                  <span className="block truncate text-xs opacity-70">
+                    {tab.description}
+                  </span>
+                </span>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </aside>
+
+        <div className="space-y-6">
         <StatusBar activeTab={activeTab} savedArea={savedArea} />
 
         <TabsContent value="運営担当">
@@ -175,6 +195,26 @@ export function AdminDashboard() {
             icon={ClipboardList}
             title="運営担当"
           >
+            <AdminCard
+              actionLabel="試合情報を保存"
+              onSave={() => save("試合情報")}
+              title="トップページ・試合情報"
+              description="ヒーローエリアと次の試合情報に表示する内容を編集します。"
+            >
+              <div className="grid gap-6 xl:grid-cols-2">
+                <MatchEditor
+                  match={data.match}
+                  onChange={setMatch}
+                  title="ヒーローエリアの試合"
+                />
+                <MatchEditor
+                  match={data.nextMatch}
+                  onChange={setNextMatch}
+                  title="次の試合情報"
+                />
+              </div>
+            </AdminCard>
+
             <AdminCard
               actionLabel="進行情報を保存"
               onSave={() => save("運営担当")}
@@ -661,9 +701,19 @@ export function AdminDashboard() {
                 actionLabel="マップ画像を保存"
                 onSave={() => save("各種マップ")}
                 title="各種マップ画像"
-                description="会場マップ、駐車場マップ、座席図をアップロードできます。"
+                description="スタジアム写真、会場マップ、駐車場マップ、座席図をアップロードできます。"
               >
                 <div className="grid gap-4">
+                  <ImageUploadField
+                    imageUrl={mapAssets.stadiumPhotoUrl}
+                    label="スタジアム写真"
+                    onChange={(stadiumPhotoUrl) =>
+                      setOperationMapAssets((current) => ({
+                        ...current,
+                        stadiumPhotoUrl,
+                      }))
+                    }
+                  />
                   <ImageUploadField
                     imageUrl={mapAssets.venueMapImageUrl}
                     label="会場マップ"
@@ -1308,6 +1358,17 @@ export function AdminDashboard() {
                         }
                       />
                     </Field>
+                    <Field label="チケット購入方法URL">
+                      <Input
+                        placeholder="https://example.com/tickets"
+                        value={ticketInfo.purchaseUrl ?? ""}
+                        onChange={(event) =>
+                          updateArrayItem(setTickets, index, {
+                            purchaseUrl: event.target.value,
+                          })
+                        }
+                      />
+                    </Field>
                   </div>
                 ))}
               </div>
@@ -1437,8 +1498,9 @@ export function AdminDashboard() {
             </AdminCard>
           </TabShell>
         </TabsContent>
-      </div>
-    </Tabs>
+        </div>
+      </Tabs>
+    </>
   );
 }
 
@@ -1476,6 +1538,21 @@ function EventEditor({
             <option value="special">特設イベント</option>
             <option value="basic">基本イベント</option>
             <option value="booth">ブース</option>
+          </select>
+        </Field>
+        <Field label="公開表示">
+          <select
+            className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm"
+            value={eventItem.eventType ?? getDefaultEventType(eventItem.category)}
+            onChange={(event) =>
+              updateArrayItem(setEventInfo, index, {
+                eventType: event.target.value as EventInfo["eventType"],
+              })
+            }
+          >
+            <option value="basic">基本</option>
+            <option value="special">特設</option>
+            <option value="limited">期間限定</option>
           </select>
         </Field>
         <Field label="イベント担当者">
@@ -1529,6 +1606,10 @@ function EventEditor({
           }
         />
       </Field>
+      <EventTagsField
+        selectedTags={eventItem.tags ?? []}
+        onChange={(tags) => updateArrayItem(setEventInfo, index, { tags })}
+      />
       <ImageUploadField
         imageUrl={eventItem.imageUrl}
         label="イベント画像"
@@ -1572,6 +1653,21 @@ function GatheringEventEditor({
               updateArrayItem(setEventInfo, index, { ownerName: event.target.value })
             }
           />
+        </Field>
+        <Field label="公開表示">
+          <select
+            className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm"
+            value={eventItem.eventType ?? "limited"}
+            onChange={(event) =>
+              updateArrayItem(setEventInfo, index, {
+                eventType: event.target.value as EventInfo["eventType"],
+              })
+            }
+          >
+            <option value="basic">基本</option>
+            <option value="special">特設</option>
+            <option value="limited">期間限定</option>
+          </select>
         </Field>
         <Field label="集合時間">
           <Input
@@ -1647,6 +1743,10 @@ function GatheringEventEditor({
           }
         />
       </Field>
+      <EventTagsField
+        selectedTags={eventItem.tags ?? []}
+        onChange={(tags) => updateArrayItem(setEventInfo, index, { tags })}
+      />
       <ImageUploadField
         imageUrl={eventItem.imageUrl}
         label="集合イベント画像"
@@ -1659,6 +1759,125 @@ function GatheringEventEditor({
           updateArrayItem(setEventInfo, index, { showOnTop: checked })
         }
       />
+    </div>
+  );
+}
+
+function EventTagsField({
+  onChange,
+  selectedTags,
+}: {
+  onChange: (tags: string[]) => void;
+  selectedTags: string[];
+}) {
+  return (
+    <Field
+      hint="利用者がトップページで絞り込むためのタグです。"
+      label="検索タグ"
+    >
+      <div className="flex flex-wrap gap-2">
+        {eventTagOptions.map((tag) => {
+          const checked = selectedTags.includes(tag);
+
+          return (
+            <button
+              className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+                checked
+                  ? "border-slate-950 bg-slate-950 text-white"
+                  : "border-input bg-background hover:bg-muted"
+              }`}
+              key={tag}
+              onClick={() =>
+                onChange(
+                  checked
+                    ? selectedTags.filter((item) => item !== tag)
+                    : [...selectedTags, tag],
+                )
+              }
+              type="button"
+            >
+              {tag}
+            </button>
+          );
+        })}
+      </div>
+    </Field>
+  );
+}
+
+function MatchEditor({
+  match,
+  onChange,
+  title,
+}: {
+  match: Match;
+  onChange: Dispatch<SetStateAction<Match>>;
+  title: string;
+}) {
+  return (
+    <div className="grid gap-4 rounded-md border bg-muted/20 p-4">
+      <h3 className="font-semibold">{title}</h3>
+      <div className="grid gap-4 md:grid-cols-2">
+        <Field label="試合名称">
+          <Input
+            value={match.matchName}
+            onChange={(event) =>
+              onChange((current) => ({ ...current, matchName: event.target.value }))
+            }
+          />
+        </Field>
+        <Field label="節数・大会名">
+          <Input
+            value={match.round}
+            onChange={(event) =>
+              onChange((current) => ({ ...current, round: event.target.value }))
+            }
+          />
+        </Field>
+        <Field label="ホームチーム">
+          <Input
+            value={match.homeTeam}
+            onChange={(event) =>
+              onChange((current) => ({ ...current, homeTeam: event.target.value }))
+            }
+          />
+        </Field>
+        <Field label="対戦相手">
+          <Input
+            value={match.opponent}
+            onChange={(event) =>
+              onChange((current) => ({ ...current, opponent: event.target.value }))
+            }
+          />
+        </Field>
+        <Field label="開催日">
+          <Input
+            value={match.date}
+            onChange={(event) =>
+              onChange((current) => ({ ...current, date: event.target.value }))
+            }
+          />
+        </Field>
+        <Field label="キックオフ">
+          <Input
+            value={match.kickoffTime}
+            onChange={(event) =>
+              onChange((current) => ({
+                ...current,
+                kickoffTime: event.target.value,
+              }))
+            }
+          />
+        </Field>
+        <Field className="md:col-span-2" label="会場">
+          <Input
+            value={match.venue}
+            onChange={(event) =>
+              onChange((current) => ({ ...current, venue: event.target.value }))
+            }
+          />
+        </Field>
+      </div>
     </div>
   );
 }
@@ -1974,6 +2193,7 @@ function createTicketItem(): TicketInfo {
     quantity: 0,
     benefit: "",
     exchangeMethod: "",
+    purchaseUrl: "",
   };
 }
 
@@ -1993,6 +2213,8 @@ function createEventItem(
     endTime: "",
     description: "",
     participationRule: "",
+    tags: [],
+    eventType: getDefaultEventType(category),
     showOnTop: true,
     ...(category === "gathering"
       ? {
@@ -2005,6 +2227,18 @@ function createEventItem(
         }
       : {}),
   };
+}
+
+function getDefaultEventType(category: EventInfo["category"]): EventInfo["eventType"] {
+  if (category === "special") {
+    return "special";
+  }
+
+  if (category === "booth" || category === "gathering") {
+    return "limited";
+  }
+
+  return "basic";
 }
 
 function createVipRoom(): VipRoomInfo {

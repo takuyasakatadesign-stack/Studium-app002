@@ -1,7 +1,7 @@
 "use client";
 
 import { ExternalLink, LockKeyhole, MapPin, Save, Store, Utensils } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SaveToast } from "@/components/shared/save-toast";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { useStadiumData } from "@/components/providers/stadium-data-provider";
@@ -30,6 +31,7 @@ export function ShopAdminPanel({
   const shop = data.shops.find((item) => item.id === initialShop.id) ?? initialShop;
   const products = data.foodItems.filter((item) => item.shopId === shop.id);
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const snsValue = useMemo(
     () =>
@@ -42,10 +44,16 @@ export function ShopAdminPanel({
 
   const save = (label: string) => {
     setSavedMessage(`${label}をローカル保存しました`);
+    setToastMessage(`${label}の変更内容をローカル保存しました`);
   };
+
+  const closeToast = useCallback(() => {
+    setToastMessage(null);
+  }, []);
 
   return (
     <div className="space-y-6">
+      <SaveToast message={toastMessage} onClose={closeToast} />
       <Card className="rounded-lg border-0 bg-slate-950 text-white shadow-sm">
         <CardContent className="grid gap-4 p-5 md:grid-cols-[1fr_auto] md:items-center">
           <div className="space-y-3">

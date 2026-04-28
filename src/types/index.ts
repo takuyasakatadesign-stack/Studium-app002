@@ -34,6 +34,7 @@ export type EventInfo = {
   id: string;
   matchId: string;
   category: "special" | "basic" | "booth" | "gathering";
+  eventType?: "basic" | "special" | "limited";
   title: string;
   department: string;
   ownerName?: string;
@@ -49,6 +50,7 @@ export type EventInfo = {
   description: string;
   participationRule?: string;
   imageUrl?: string;
+  tags?: string[];
   showOnTop?: boolean;
 };
 
@@ -163,6 +165,7 @@ export type TicketInfo = {
   quantity: number;
   benefit: string;
   exchangeMethod: string;
+  purchaseUrl?: string;
 };
 
 export type DistributionInfo = {
@@ -203,6 +206,7 @@ export type MediaVisitInfo = {
 };
 
 export type OperationMapAssets = {
+  stadiumPhotoUrl?: string;
   venueMapImageUrl?: string;
   parkingMapImageUrl?: string;
   seatingChartImageUrl?: string;
