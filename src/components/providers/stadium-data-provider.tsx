@@ -15,9 +15,12 @@ import type {
   GateInfo,
   GoodsItem,
   EventInfo,
+  EquipmentPlacementInfo,
   MatchScopedData,
+  MediaVisitInfo,
   NewsItem,
   Shop,
+  StaffAssignmentInfo,
   StaffEquipmentInfo,
   TicketInfo,
   TimelineItem,
@@ -31,12 +34,16 @@ type StadiumDataContextValue = {
   isHydrated: boolean;
   resetData: () => void;
   setEventInfo: Dispatch<SetStateAction<EventInfo[]>>;
+  setEquipmentPlacements: Dispatch<SetStateAction<EquipmentPlacementInfo[]>>;
   setFoodItems: Dispatch<SetStateAction<FoodItem[]>>;
   setGates: Dispatch<SetStateAction<GateInfo[]>>;
   setGoodsItems: Dispatch<SetStateAction<GoodsItem[]>>;
+  setMediaVisits: Dispatch<SetStateAction<MediaVisitInfo[]>>;
   setNewsItems: Dispatch<SetStateAction<NewsItem[]>>;
   setShop: (shop: Shop) => void;
   setShops: Dispatch<SetStateAction<Shop[]>>;
+  setSponsorNotes: Dispatch<SetStateAction<string>>;
+  setStaffAssignments: Dispatch<SetStateAction<StaffAssignmentInfo[]>>;
   setStaffEquipment: Dispatch<SetStateAction<StaffEquipmentInfo>>;
   setTickets: Dispatch<SetStateAction<TicketInfo[]>>;
   setTimelineItems: Dispatch<SetStateAction<TimelineItem[]>>;
@@ -94,6 +101,17 @@ export function StadiumDataProvider({
           ...current,
           eventInfo: resolve(action, current.eventInfo),
         })),
+      setEquipmentPlacements: (action) =>
+        setData((current) => ({
+          ...current,
+          internalOperationInfo: {
+            ...current.internalOperationInfo,
+            equipmentPlacements: resolve(
+              action,
+              current.internalOperationInfo.equipmentPlacements ?? [],
+            ),
+          },
+        })),
       setFoodItems: (action) =>
         setData((current) => ({
           ...current,
@@ -112,6 +130,17 @@ export function StadiumDataProvider({
           ...current,
           goodsItems: resolve(action, current.goodsItems),
         })),
+      setMediaVisits: (action) =>
+        setData((current) => ({
+          ...current,
+          internalOperationInfo: {
+            ...current.internalOperationInfo,
+            mediaVisits: resolve(
+              action,
+              current.internalOperationInfo.mediaVisits ?? [],
+            ),
+          },
+        })),
       setNewsItems: (action) =>
         setData((current) => ({
           ...current,
@@ -126,6 +155,28 @@ export function StadiumDataProvider({
         setData((current) => ({
           ...current,
           shops: resolve(action, current.shops),
+        })),
+      setSponsorNotes: (action) =>
+        setData((current) => ({
+          ...current,
+          internalOperationInfo: {
+            ...current.internalOperationInfo,
+            sponsorNotes: resolve(
+              action,
+              current.internalOperationInfo.sponsorNotes ?? "",
+            ),
+          },
+        })),
+      setStaffAssignments: (action) =>
+        setData((current) => ({
+          ...current,
+          internalOperationInfo: {
+            ...current.internalOperationInfo,
+            staffAssignments: resolve(
+              action,
+              current.internalOperationInfo.staffAssignments ?? [],
+            ),
+          },
         })),
       setStaffEquipment: (action) =>
         setData((current) => ({

@@ -36,9 +36,16 @@ export type EventInfo = {
   category: "special" | "basic" | "booth" | "gathering";
   title: string;
   department: string;
+  ownerName?: string;
   location: string;
   startTime: string;
   endTime?: string;
+  gatheringTime?: string;
+  gatheringLocation?: string;
+  dismissalTime?: string;
+  dismissalLocation?: string;
+  receptionOwner?: string;
+  planningOwner?: string;
   description: string;
   participationRule?: string;
   imageUrl?: string;
@@ -116,6 +123,7 @@ export type GateInfo = {
   name: string;
   openTime: string;
   lanes: string;
+  targetAudience?: string;
 };
 
 export type VipRoomInfo = {
@@ -132,6 +140,20 @@ export type StaffEquipmentInfo = {
   volunteers: number;
   equipmentOrders: string[];
   flagsAndSigns: string;
+};
+
+export type StaffAssignmentInfo = {
+  id: string;
+  label: string;
+  count: number;
+};
+
+export type EquipmentPlacementInfo = {
+  id: string;
+  name: string;
+  quantity: string;
+  location: string;
+  note?: string;
 };
 
 export type TicketInfo = {
@@ -160,6 +182,16 @@ export type SponsorInfo = {
   note: string;
 };
 
+export type MediaVisitInfo = {
+  id: string;
+  mediaName: string;
+  mediaType: "中継" | "映像" | "フォト" | "ペン" | "その他";
+  representative: string;
+  peopleCount: number;
+  waitingRoom: string;
+  viewingLocation: string;
+};
+
 export type InternalOperationInfo = {
   matchId: string;
   weather: {
@@ -175,10 +207,14 @@ export type InternalOperationInfo = {
   };
   gates: GateInfo[];
   vipRooms: VipRoomInfo[];
+  staffAssignments: StaffAssignmentInfo[];
+  equipmentPlacements: EquipmentPlacementInfo[];
   staffEquipment: StaffEquipmentInfo;
   tickets: TicketInfo[];
   distributions: DistributionInfo[];
   sponsors: SponsorInfo[];
+  sponsorNotes: string;
+  mediaVisits: MediaVisitInfo[];
 };
 
 export type MatchScopedData = {

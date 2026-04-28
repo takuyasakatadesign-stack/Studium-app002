@@ -8,7 +8,6 @@ import {
   Clock,
   HelpCircle,
   MapPin,
-  Megaphone,
   Shirt,
   Sparkles,
   Ticket,
@@ -32,7 +31,6 @@ export default function Home() {
     foodItems,
     goodsItems,
     match: currentMatch,
-    newsItems,
     nextMatch,
     shops,
     timelineItems,
@@ -349,7 +347,7 @@ export default function Home() {
             </Card>
           </section>
 
-          <section className="grid gap-6 lg:grid-cols-[1fr_0.85fr]">
+          <section>
             <Card className="rounded-lg border-0 shadow-sm">
               <CardHeader>
                 <SectionTitle icon={HelpCircle} title="FAQ・観戦ルール" label="GUIDE" />
@@ -361,24 +359,6 @@ export default function Home() {
                     <p className="mt-3 font-semibold">{item.question}</p>
                     <p className="mt-1 text-sm text-slate-600">{item.answer}</p>
                   </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            <Card className="rounded-lg border-0 shadow-sm">
-              <CardHeader>
-                <SectionTitle icon={Megaphone} title="NEWS" label="NEWS" />
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {newsItems.map((item) => (
-                  <article key={item.id} className="border-b pb-4 last:border-b-0">
-                    <div className="flex items-center gap-2">
-                      <Badge variant="secondary">{item.category}</Badge>
-                      <span className="text-xs text-slate-500">{item.date}</span>
-                    </div>
-                    <h3 className="mt-2 font-semibold">{item.title}</h3>
-                    <p className="mt-1 text-sm text-slate-600">{item.body}</p>
-                  </article>
                 ))}
               </CardContent>
             </Card>

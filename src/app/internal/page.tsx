@@ -23,7 +23,6 @@ import {
   foodItems,
   goodsItems,
   internalOperationInfo,
-  newsItems,
   shops,
   timelineItems,
 } from "@/lib/mock-data";
@@ -270,28 +269,21 @@ export default async function InternalPage() {
       </section>
 
       <section className="grid gap-4 lg:grid-cols-2">
-        <DashboardSection icon={Megaphone} title="NEWS・SNS確認">
+        <DashboardSection icon={Megaphone} title="メディア来場情報">
           <DataTable
-            columns={["カテゴリ", "日付", "タイトル", "本文"]}
-            rows={newsItems.map((item) => [
-              item.category,
-              item.date,
-              item.title,
-              item.body,
+            columns={["メディア名", "種類", "代表者・人数", "控室", "観戦場所"]}
+            rows={internalOperationInfo.mediaVisits.map((item) => [
+              item.mediaName,
+              item.mediaType,
+              `${item.representative} / ${item.peopleCount}名`,
+              item.waitingRoom,
+              item.viewingLocation,
             ])}
           />
         </DashboardSection>
 
-        <DashboardSection icon={FileText} title="スポンサー情報">
-          <DataTable
-            columns={["スポンサー", "掲出・実施場所", "担当部署", "備考"]}
-            rows={internalOperationInfo.sponsors.map((item) => [
-              item.name,
-              item.location,
-              item.ownerDepartment,
-              item.note,
-            ])}
-          />
+        <DashboardSection icon={FileText} title="スポンサー伝達事項">
+          <Metric label="伝達メモ" value={internalOperationInfo.sponsorNotes} />
         </DashboardSection>
       </section>
     </div>

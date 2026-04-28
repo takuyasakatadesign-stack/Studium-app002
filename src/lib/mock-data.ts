@@ -80,6 +80,7 @@ export const eventInfo: EventInfo[] = [
     location: "南広場ステージ",
     startTime: "15:30",
     endTime: "16:30",
+    ownerName: "事業担当 山田",
     description: "地域団体によるパフォーマンスを実施します。",
     participationRule: "観覧自由",
     imageUrl:
@@ -95,6 +96,7 @@ export const eventInfo: EventInfo[] = [
     location: "メインスタンド前",
     startTime: "15:00",
     endTime: "18:30",
+    ownerName: "営業担当 佐藤",
     description: "来場者向け抽選会と体験コンテンツを提供します。",
     participationRule: "当日の観戦チケットが必要",
     imageUrl:
@@ -110,6 +112,7 @@ export const eventInfo: EventInfo[] = [
     location: "ピッチサイド",
     startTime: "18:10",
     endTime: "18:35",
+    ownerName: "運営担当 田中",
     description: "指定エリアからウォーミングアップを見学できます。",
     imageUrl:
       "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=900&q=80",
@@ -124,6 +127,13 @@ export const eventInfo: EventInfo[] = [
     location: "関係者受付前",
     startTime: "17:40",
     endTime: "19:10",
+    gatheringTime: "17:40",
+    gatheringLocation: "関係者受付前",
+    dismissalTime: "19:10",
+    dismissalLocation: "関係者受付前",
+    receptionOwner: "運営担当 鈴木",
+    planningOwner: "事業担当 山田",
+    ownerName: "事業担当 山田",
     description: "参加者受付、説明、ピッチ入場、解散までを実施します。",
     participationRule: "事前購入者特典",
     imageUrl:
@@ -353,12 +363,14 @@ export const internalOperationInfo: InternalOperationInfo = {
       name: "メインゲート",
       openTime: "17:00",
       lanes: "一般4 / 優先1 / 車いす1",
+      targetAudience: "ホーム自由席、メインスタンド、車いす席",
     },
     {
       id: "gate-002",
       name: "バックゲート",
       openTime: "17:00",
       lanes: "一般3 / ビジター1",
+      targetAudience: "バックスタンド、ビジター席",
     },
   ],
   vipRooms: [
@@ -377,6 +389,28 @@ export const internalOperationInfo: InternalOperationInfo = {
     equipmentOrders: ["カラーコーン 40個", "案内看板 12枚", "養生テープ 20巻"],
     flagsAndSigns: "のぼり旗24本、場外誘導看板8枚",
   },
+  staffAssignments: [
+    { id: "staff-assignment-001", label: "アルバイトスタッフ", count: 42 },
+    { id: "staff-assignment-002", label: "ボランティア", count: 68 },
+    { id: "staff-assignment-003", label: "クラブ社員", count: 18 },
+    { id: "staff-assignment-004", label: "警備員", count: 56 },
+  ],
+  equipmentPlacements: [
+    {
+      id: "equipment-placement-001",
+      name: "カラーコーン",
+      quantity: "40個",
+      location: "南広場、入場待機列",
+      note: "開門2時間前までに設置",
+    },
+    {
+      id: "equipment-placement-002",
+      name: "案内看板",
+      quantity: "12枚",
+      location: "各ゲート、総合案内所",
+      note: "導線変更時は運営本部へ確認",
+    },
+  ],
   tickets: [
     {
       id: "ticket-001",
@@ -412,6 +446,28 @@ export const internalOperationInfo: InternalOperationInfo = {
       location: "メインスタンド前ブース",
       ownerDepartment: "営業担当",
       note: "抽選会景品は14:00搬入予定",
+    },
+  ],
+  sponsorNotes:
+    "スポンサー体験ブースの景品搬入は14:00予定。営業担当は設営完了後に運営本部へ共有。",
+  mediaVisits: [
+    {
+      id: "media-001",
+      mediaName: "青空テレビ",
+      mediaType: "中継",
+      representative: "中村プロデューサー",
+      peopleCount: 8,
+      waitingRoom: "メディア控室 A",
+      viewingLocation: "メインスタンド中継席",
+    },
+    {
+      id: "media-002",
+      mediaName: "スポーツフォト通信",
+      mediaType: "フォト",
+      representative: "加藤カメラマン",
+      peopleCount: 2,
+      waitingRoom: "メディア控室 B",
+      viewingLocation: "ピッチサイド撮影エリア",
     },
   ],
 };

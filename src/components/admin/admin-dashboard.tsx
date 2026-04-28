@@ -25,14 +25,30 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useStadiumData } from "@/components/providers/stadium-data-provider";
-import type { EventInfo, FoodItem, GoodsItem, Shop, TicketInfo } from "@/types";
+import type {
+  EquipmentPlacementInfo,
+  EventInfo,
+  FoodItem,
+  GoodsItem,
+  MediaVisitInfo,
+  Shop,
+  StaffAssignmentInfo,
+  TicketInfo,
+  VipRoomInfo,
+} from "@/types";
 
 const tabs = [
   {
     value: "運営担当",
     label: "運営担当",
-    description: "進行、イベント、入場口、備品",
+    description: "進行、入場口、スタッフ、備品",
     icon: ClipboardList,
+  },
+  {
+    value: "イベント",
+    label: "イベント",
+    description: "イベント掲載、集合イベント",
+    icon: Megaphone,
   },
   {
     value: "グッズ担当",
@@ -49,7 +65,7 @@ const tabs = [
   {
     value: "営業担当",
     label: "営業担当",
-    description: "VIP、諸室、スポンサー",
+    description: "VIP、諸室、スポンサー連絡",
     icon: Building2,
   },
   {
@@ -61,7 +77,7 @@ const tabs = [
   {
     value: "広報担当",
     label: "広報担当",
-    description: "NEWS、配布物、SNS",
+    description: "来場メディア管理",
     icon: Megaphone,
   },
 ] as const;
@@ -71,13 +87,15 @@ type AdminTab = (typeof tabs)[number]["value"];
 export function AdminDashboard() {
   const {
     data,
+    setEquipmentPlacements,
     setEventInfo,
     setFoodItems,
     setGates,
     setGoodsItems,
-    setNewsItems,
+    setMediaVisits,
     setShops,
-    setStaffEquipment,
+    setSponsorNotes,
+    setStaffAssignments,
     setTickets,
     setTimelineItems,
     setVipRooms,
@@ -85,13 +103,17 @@ export function AdminDashboard() {
   const timelines = data.timelineItems;
   const events = data.eventInfo;
   const gates = data.internalOperationInfo.gates;
-  const staffEquipment = data.internalOperationInfo.staffEquipment;
+  const staffAssignments =
+    data.internalOperationInfo.staffAssignments ?? defaultStaffAssignments();
+  const equipmentPlacements =
+    data.internalOperationInfo.equipmentPlacements ?? defaultEquipmentPlacements();
   const goods = data.goodsItems;
   const shopList = data.shops;
   const foods = data.foodItems;
   const vipRooms = data.internalOperationInfo.vipRooms;
   const tickets = data.internalOperationInfo.tickets;
-  const news = data.newsItems;
+  const mediaVisits = data.internalOperationInfo.mediaVisits ?? [];
+  const sponsorNotes = data.internalOperationInfo.sponsorNotes ?? "";
   const users = data.users;
   const [activeTab, setActiveTab] = useState<AdminTab>("運営担当");
   const [savedArea, setSavedArea] = useState<string | null>(null);
@@ -138,7 +160,7 @@ export function AdminDashboard() {
 
         <TabsContent value="運営担当">
           <TabShell
-            description="試合当日の進行、イベント掲載、入場口、スタッフ・備品を管理します。"
+            description="試合当日の進行、入場口、スタッフ配置、備品配置、配布物を管理します。"
             icon={ClipboardList}
             title="運営担当"
           >
@@ -234,128 +256,33 @@ export function AdminDashboard() {
               </div>
             </AdminCard>
 
-            <AdminCard
-              actionLabel="イベント情報を保存"
-              onSave={() => save("イベント情報")}
-              title="イベント掲載情報"
-              description="トップページに掲載するイベント、画像、参加条件を管理します。"
-              headerAction={
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() =>
-                    setEventInfo((items) => [
-                      ...items,
-                      {
-                        id: `event-${Date.now()}`,
-                        matchId: data.match.id,
-                        category: "basic",
-                        title: "",
-                        department: "運営担当",
-                        location: "",
-                        startTime: "",
-                        description: "",
-                        participationRule: "",
-                        showOnTop: true,
-                      },
-                    ])
-                  }
-                >
-                  <Plus className="size-4" />
-                  イベントを追加
-                </Button>
-              }
-            >
-              <div className="grid gap-4 xl:grid-cols-2">
-                {events.map((eventItem, index) => (
-                  <div className="grid gap-4 rounded-md border p-4" key={eventItem.id}>
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <Field label="イベント名">
-                        <Input
-                          placeholder="ホームタウン感謝ステージ"
-                          value={eventItem.title}
-                          onChange={(event) =>
-                            updateArrayItem(setEventInfo, index, {
-                              title: event.target.value,
-                            })
-                          }
-                        />
-                      </Field>
-                      <Field label="区分">
-                        <select
-                          className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm"
-                          value={eventItem.category}
-                          onChange={(event) =>
-                            updateArrayItem(setEventInfo, index, {
-                              category: event.target.value as EventInfo["category"],
-                            })
-                          }
-                        >
-                          <option value="special">特設イベント</option>
-                          <option value="basic">基本イベント</option>
-                          <option value="booth">ブース</option>
-                          <option value="gathering">集合イベント</option>
-                        </select>
-                      </Field>
-                      <Field label="開始時刻">
-                        <Input
-                          placeholder="15:30"
-                          value={eventItem.startTime}
-                          onChange={(event) =>
-                            updateArrayItem(setEventInfo, index, {
-                              startTime: event.target.value,
-                            })
-                          }
-                        />
-                      </Field>
-                      <Field label="実施場所">
-                        <Input
-                          placeholder="南広場ステージ"
-                          value={eventItem.location}
-                          onChange={(event) =>
-                            updateArrayItem(setEventInfo, index, {
-                              location: event.target.value,
-                            })
-                          }
-                        />
-                      </Field>
-                    </div>
-                    <Field label="説明文">
-                      <Textarea
-                        placeholder="公開ページに掲載する説明"
-                        value={eventItem.description}
-                        onChange={(event) =>
-                          updateArrayItem(setEventInfo, index, {
-                            description: event.target.value,
-                          })
-                        }
-                      />
-                    </Field>
-                    <ImageUploadField
-                      imageUrl={eventItem.imageUrl}
-                      label="イベント画像"
-                      onChange={(imageUrl) =>
-                        updateArrayItem(setEventInfo, index, { imageUrl })
-                      }
-                    />
-                    <PublishField
-                      checked={eventItem.showOnTop !== false}
-                      label="トップページに掲載する"
-                      onChange={(checked) =>
-                        updateArrayItem(setEventInfo, index, { showOnTop: checked })
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-            </AdminCard>
-
             <div className="grid gap-4 lg:grid-cols-2">
               <AdminCard
                 actionLabel="ゲート管理を保存"
                 onSave={() => save("ゲート管理")}
                 title="ゲート管理"
-                description="開門時刻とレーン構成を入力します。"
+                description="開門時刻、レーン構成、入場対象者を入力します。"
+                headerAction={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() =>
+                      setGates((items) => [
+                        ...items,
+                        {
+                          id: `gate-${Date.now()}`,
+                          name: "",
+                          openTime: "",
+                          lanes: "",
+                          targetAudience: "",
+                        },
+                      ])
+                    }
+                  >
+                    <Plus className="size-4" />
+                    ゲートを追加
+                  </Button>
+                }
               >
                 <div className="space-y-4">
                   {gates.map((gate, index) => (
@@ -392,6 +319,17 @@ export function AdminDashboard() {
                           />
                         </Field>
                       </div>
+                      <Field label="入場対象者">
+                        <Textarea
+                          placeholder="ホーム自由席、メインスタンド、車いす席など"
+                          value={gate.targetAudience ?? ""}
+                          onChange={(event) =>
+                            updateArrayItem(setGates, index, {
+                              targetAudience: event.target.value,
+                            })
+                          }
+                        />
+                      </Field>
                     </div>
                   ))}
                 </div>
@@ -400,59 +338,238 @@ export function AdminDashboard() {
               <AdminCard
                 actionLabel="スタッフ配置を保存"
                 onSave={() => save("スタッフ配置")}
-                title="スタッフ配置・備品"
-                description="当日の備品数量と発注内容を管理します。"
+                title="スタッフ配置"
+                description="スタッフ種別と人数を管理します。"
+                headerAction={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() =>
+                      setStaffAssignments((items) => [
+                        ...items,
+                        { id: `staff-assignment-${Date.now()}`, label: "", count: 0 },
+                      ])
+                    }
+                  >
+                    <Plus className="size-4" />
+                    項目を追加
+                  </Button>
+                }
+              >
+                <div className="grid gap-3">
+                  {staffAssignments.map((assignment, index) => (
+                    <div
+                      className="grid gap-3 rounded-md border p-3 md:grid-cols-[1fr_140px]"
+                      key={assignment.id}
+                    >
+                      <Field label="スタッフ種別">
+                        <Input
+                          placeholder="アルバイトスタッフ"
+                          value={assignment.label}
+                          onChange={(event) =>
+                            updateArrayItem(setStaffAssignments, index, {
+                              label: event.target.value,
+                            })
+                          }
+                        />
+                      </Field>
+                      <Field label="人数">
+                        <Input
+                          type="number"
+                          value={assignment.count}
+                          onChange={(event) =>
+                            updateArrayItem(setStaffAssignments, index, {
+                              count: Number(event.target.value),
+                            })
+                          }
+                        />
+                      </Field>
+                    </div>
+                  ))}
+                </div>
+              </AdminCard>
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-2">
+              <AdminCard
+                actionLabel="備品配置を保存"
+                onSave={() => save("備品配置")}
+                title="備品配置"
+                description="備品名、数量、設置場所、補足を管理します。"
+                headerAction={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() =>
+                      setEquipmentPlacements((items) => [
+                        ...items,
+                        createEquipmentPlacement(),
+                      ])
+                    }
+                  >
+                    <Plus className="size-4" />
+                    備品を追加
+                  </Button>
+                }
+              >
+                <div className="grid gap-3">
+                  {equipmentPlacements.map((equipment, index) => (
+                    <div className="grid gap-3 rounded-md border p-3" key={equipment.id}>
+                      <div className="grid gap-3 md:grid-cols-2">
+                        <Field label="備品名">
+                          <Input
+                            value={equipment.name}
+                            onChange={(event) =>
+                              updateArrayItem(setEquipmentPlacements, index, {
+                                name: event.target.value,
+                              })
+                            }
+                          />
+                        </Field>
+                        <Field label="数量">
+                          <Input
+                            value={equipment.quantity}
+                            onChange={(event) =>
+                              updateArrayItem(setEquipmentPlacements, index, {
+                                quantity: event.target.value,
+                              })
+                            }
+                          />
+                        </Field>
+                      </div>
+                      <Field label="設置場所">
+                        <Input
+                          value={equipment.location}
+                          onChange={(event) =>
+                            updateArrayItem(setEquipmentPlacements, index, {
+                              location: event.target.value,
+                            })
+                          }
+                        />
+                      </Field>
+                      <Field label="補足">
+                        <Textarea
+                          value={equipment.note ?? ""}
+                          onChange={(event) =>
+                            updateArrayItem(setEquipmentPlacements, index, {
+                              note: event.target.value,
+                            })
+                          }
+                        />
+                      </Field>
+                    </div>
+                  ))}
+                </div>
+              </AdminCard>
+
+              <AdminCard
+                actionLabel="配布物を保存"
+                onSave={() => save("配布物")}
+                title="配布物"
+                description="配布物は運営担当で管理します。現在は仮入力欄です。"
               >
                 <div className="grid gap-4 md:grid-cols-2">
-                  <Field label="無線機 台数">
-                    <Input
-                      type="number"
-                      value={staffEquipment.radios}
-                      onChange={(event) =>
-                        setStaffEquipment((current) => ({
-                          ...current,
-                          radios: Number(event.target.value),
-                        }))
-                      }
-                    />
+                  <Field label="配布物名">
+                    <Input defaultValue="マッチデープログラム" />
                   </Field>
-                  <Field label="ボランティア人数">
-                    <Input
-                      type="number"
-                      value={staffEquipment.volunteers}
-                      onChange={(event) =>
-                        setStaffEquipment((current) => ({
-                          ...current,
-                          volunteers: Number(event.target.value),
-                        }))
-                      }
-                    />
+                  <Field label="数量">
+                    <Input defaultValue="12,000部" />
                   </Field>
-                  <Field className="md:col-span-2" label="備品発注リスト">
-                    <Textarea
-                      value={staffEquipment.equipmentOrders.join("\n")}
-                      onChange={(event) =>
-                        setStaffEquipment((current) => ({
-                          ...current,
-                          equipmentOrders: event.target.value.split("\n"),
-                        }))
-                      }
-                    />
+                  <Field label="配布場所">
+                    <Input defaultValue="各入場ゲート" />
                   </Field>
-                  <Field className="md:col-span-2" label="のぼり旗・看板">
-                    <Textarea
-                      value={staffEquipment.flagsAndSigns}
-                      onChange={(event) =>
-                        setStaffEquipment((current) => ({
-                          ...current,
-                          flagsAndSigns: event.target.value,
-                        }))
-                      }
-                    />
+                  <Field label="納品情報">
+                    <Input defaultValue="試合前日 15:00 納品" />
                   </Field>
                 </div>
               </AdminCard>
             </div>
+          </TabShell>
+        </TabsContent>
+
+        <TabsContent value="イベント">
+          <TabShell
+            description="通常イベントと集合イベントを分けて管理します。画像、担当者、トップページ掲載可否もここで設定します。"
+            icon={Megaphone}
+            title="イベント"
+          >
+            <AdminCard
+              actionLabel="イベント情報を保存"
+              onSave={() => save("イベント情報")}
+              title="イベント掲載情報"
+              description="トップページに掲載するイベント、画像、担当者、参加条件を管理します。"
+              headerAction={
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() =>
+                    setEventInfo((items) => [
+                      ...items,
+                      createEventItem(data.match.id, "basic"),
+                    ])
+                  }
+                >
+                  <Plus className="size-4" />
+                  イベントを追加
+                </Button>
+              }
+            >
+              <div className="grid gap-4 xl:grid-cols-2">
+                {events
+                  .filter((eventItem) => eventItem.category !== "gathering")
+                  .map((eventItem) => {
+                    const index = events.findIndex((item) => item.id === eventItem.id);
+
+                    return (
+                      <EventEditor
+                        eventItem={eventItem}
+                        index={index}
+                        key={eventItem.id}
+                        setEventInfo={setEventInfo}
+                      />
+                    );
+                  })}
+              </div>
+            </AdminCard>
+
+            <AdminCard
+              actionLabel="集合イベントを保存"
+              onSave={() => save("集合イベント")}
+              title="集合イベント"
+              description="集合・解散、受付担当、企画担当を管理します。"
+              headerAction={
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() =>
+                    setEventInfo((items) => [
+                      ...items,
+                      createEventItem(data.match.id, "gathering"),
+                    ])
+                  }
+                >
+                  <Plus className="size-4" />
+                  集合イベントを追加
+                </Button>
+              }
+            >
+              <div className="grid gap-4 xl:grid-cols-2">
+                {events
+                  .filter((eventItem) => eventItem.category === "gathering")
+                  .map((eventItem) => {
+                    const index = events.findIndex((item) => item.id === eventItem.id);
+
+                    return (
+                      <GatheringEventEditor
+                        eventItem={eventItem}
+                        index={index}
+                        key={eventItem.id}
+                        setEventInfo={setEventInfo}
+                      />
+                    );
+                  })}
+              </div>
+            </AdminCard>
           </TabShell>
         </TabsContent>
 
@@ -762,7 +879,7 @@ export function AdminDashboard() {
 
         <TabsContent value="営業担当">
           <TabShell
-            description="VIP、諸室、スポンサー関連の当日運用情報を管理します。"
+            description="VIP、諸室、スポンサーに関する伝達事項を管理します。"
             icon={Building2}
             title="営業担当"
           >
@@ -771,6 +888,18 @@ export function AdminDashboard() {
               onSave={() => save("営業担当")}
               title="VIP管理・諸室管理"
               description="利用者、人数、サービス内容を入力します。"
+              headerAction={
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() =>
+                    setVipRooms((items) => [...items, createVipRoom()])
+                  }
+                >
+                  <Plus className="size-4" />
+                  諸室を追加
+                </Button>
+              }
             >
               <div className="grid gap-4 lg:grid-cols-2">
                 {vipRooms.map((room, index) => (
@@ -822,22 +951,17 @@ export function AdminDashboard() {
             </AdminCard>
 
             <AdminCard
-              actionLabel="スポンサー情報を保存"
-              onSave={() => save("スポンサー情報")}
-              title="スポンサー情報"
-              description="現在は仮入力欄です。DB接続時に保存対象へ拡張します。"
+              actionLabel="伝達事項を保存"
+              onSave={() => save("スポンサー伝達事項")}
+              title="スポンサーに関する伝達事項"
+              description="スポンサー対応に関する連絡事項や当日注意点をメモします。"
             >
-              <div className="grid gap-4 md:grid-cols-3">
-                <Field label="スポンサー名">
-                  <Input defaultValue="スポンサー A社" />
-                </Field>
-                <Field label="掲出場所">
-                  <Input defaultValue="メインスタンド前ブース" />
-                </Field>
-                <Field label="担当部署">
-                  <Input defaultValue="営業担当" />
-                </Field>
-              </div>
+              <Field label="伝達メモ">
+                <Textarea
+                  value={sponsorNotes}
+                  onChange={(event) => setSponsorNotes(event.target.value)}
+                />
+              </Field>
             </AdminCard>
           </TabShell>
         </TabsContent>
@@ -951,134 +1075,330 @@ export function AdminDashboard() {
 
         <TabsContent value="広報担当">
           <TabShell
-            description="NEWS、配布物、SNS告知など、公開前後の情報発信を管理します。"
+            description="来場予定のメディア情報を管理します。"
             icon={Megaphone}
             title="広報担当"
           >
             <AdminCard
-              actionLabel="NEWSを保存"
-              onSave={() => save("NEWS")}
-              title="NEWS"
-              description="公開画面に掲載するお知らせを管理します。"
+              actionLabel="メディア情報を保存"
+              onSave={() => save("メディア情報")}
+              title="来場予定メディア"
+              description="中継、映像、フォト、ペンなどの来場メディアを管理します。"
               headerAction={
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() =>
-                    setNewsItems((items) => [
-                      ...items,
-                      {
-                        id: `news-${Date.now()}`,
-                        matchId: data.match.id,
-                        title: "",
-                        date: "",
-                        category: "",
-                        body: "",
-                      },
-                    ])
+                    setMediaVisits((items) => [...items, createMediaVisit()])
                   }
                 >
                   <Plus className="size-4" />
-                  NEWSを追加
+                  メディアを追加
                 </Button>
               }
             >
-              <div className="grid gap-4 lg:grid-cols-3">
-                {news.map((item, index) => (
-                  <div className="grid gap-3 rounded-md border p-4" key={item.id}>
-                    <Field label="タイトル">
-                      <Input
-                        value={item.title}
-                        onChange={(event) =>
-                          updateArrayItem(setNewsItems, index, {
-                            title: event.target.value,
-                          })
-                        }
-                      />
-                    </Field>
+              <div className="grid gap-4 xl:grid-cols-2">
+                {mediaVisits.map((media, index) => (
+                  <div className="grid gap-4 rounded-md border p-4" key={media.id}>
                     <div className="grid gap-3 md:grid-cols-2">
-                      <Field label="日付">
+                      <Field label="メディア名">
                         <Input
-                          value={item.date}
+                          value={media.mediaName}
                           onChange={(event) =>
-                            updateArrayItem(setNewsItems, index, {
-                              date: event.target.value,
+                            updateArrayItem(setMediaVisits, index, {
+                              mediaName: event.target.value,
                             })
                           }
                         />
                       </Field>
-                      <Field label="カテゴリ">
-                        <Input
-                          value={item.category}
+                      <Field label="種類">
+                        <select
+                          className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm"
+                          value={media.mediaType}
                           onChange={(event) =>
-                            updateArrayItem(setNewsItems, index, {
-                              category: event.target.value,
+                            updateArrayItem(setMediaVisits, index, {
+                              mediaType: event.target.value as MediaVisitInfo["mediaType"],
+                            })
+                          }
+                        >
+                          <option value="中継">中継</option>
+                          <option value="映像">映像</option>
+                          <option value="フォト">フォト</option>
+                          <option value="ペン">ペン</option>
+                          <option value="その他">その他</option>
+                        </select>
+                      </Field>
+                      <Field label="氏名 or 代表者">
+                        <Input
+                          value={media.representative}
+                          onChange={(event) =>
+                            updateArrayItem(setMediaVisits, index, {
+                              representative: event.target.value,
+                            })
+                          }
+                        />
+                      </Field>
+                      <Field label="人数">
+                        <Input
+                          type="number"
+                          value={media.peopleCount}
+                          onChange={(event) =>
+                            updateArrayItem(setMediaVisits, index, {
+                              peopleCount: Number(event.target.value),
+                            })
+                          }
+                        />
+                      </Field>
+                      <Field label="控室">
+                        <Input
+                          value={media.waitingRoom}
+                          onChange={(event) =>
+                            updateArrayItem(setMediaVisits, index, {
+                              waitingRoom: event.target.value,
+                            })
+                          }
+                        />
+                      </Field>
+                      <Field label="観戦場所">
+                        <Input
+                          value={media.viewingLocation}
+                          onChange={(event) =>
+                            updateArrayItem(setMediaVisits, index, {
+                              viewingLocation: event.target.value,
                             })
                           }
                         />
                       </Field>
                     </div>
-                    <Field label="本文">
-                      <Textarea
-                        value={item.body}
-                        onChange={(event) =>
-                          updateArrayItem(setNewsItems, index, {
-                            body: event.target.value,
-                          })
-                        }
-                      />
-                    </Field>
                   </div>
                 ))}
               </div>
             </AdminCard>
-
-            <div className="grid gap-4 lg:grid-cols-2">
-              <AdminCard
-                actionLabel="配布物を保存"
-                onSave={() => save("配布物")}
-                title="配布物"
-                description="現在は仮入力欄です。DB接続時に保存対象へ拡張します。"
-              >
-                <div className="grid gap-4 md:grid-cols-2">
-                  <Field label="配布物名">
-                    <Input defaultValue="マッチデープログラム" />
-                  </Field>
-                  <Field label="数量">
-                    <Input defaultValue="12,000部" />
-                  </Field>
-                  <Field label="配布場所">
-                    <Input defaultValue="各入場ゲート" />
-                  </Field>
-                  <Field label="納品情報">
-                    <Input defaultValue="試合前日 15:00 納品" />
-                  </Field>
-                </div>
-              </AdminCard>
-
-              <AdminCard
-                actionLabel="SNS情報を保存"
-                onSave={() => save("SNS情報")}
-                title="SNS情報"
-                description="現在は仮入力欄です。DB接続時に保存対象へ拡張します。"
-              >
-                <div className="grid gap-4">
-                  <Field label="投稿予定">
-                    <Input defaultValue="キックオフ3時間前 / スタメン発表 / 試合終了後" />
-                  </Field>
-                  <Field label="ハッシュタグ">
-                    <Input defaultValue="#ブルーシティFC #ホームタウン感謝デー" />
-                  </Field>
-                  <Field label="投稿文">
-                    <Textarea defaultValue="本日はホームタウン感謝デー。イベント、グルメ、グッズ情報をチェックしてスタジアムを楽しもう。" />
-                  </Field>
-                </div>
-              </AdminCard>
-            </div>
           </TabShell>
         </TabsContent>
       </div>
     </Tabs>
+  );
+}
+
+function EventEditor({
+  eventItem,
+  index,
+  setEventInfo,
+}: {
+  eventItem: EventInfo;
+  index: number;
+  setEventInfo: Dispatch<SetStateAction<EventInfo[]>>;
+}) {
+  return (
+    <div className="grid gap-4 rounded-md border p-4">
+      <div className="grid gap-4 md:grid-cols-2">
+        <Field label="イベント名">
+          <Input
+            placeholder="ホームタウン感謝ステージ"
+            value={eventItem.title}
+            onChange={(event) =>
+              updateArrayItem(setEventInfo, index, { title: event.target.value })
+            }
+          />
+        </Field>
+        <Field label="区分">
+          <select
+            className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm"
+            value={eventItem.category}
+            onChange={(event) =>
+              updateArrayItem(setEventInfo, index, {
+                category: event.target.value as EventInfo["category"],
+              })
+            }
+          >
+            <option value="special">特設イベント</option>
+            <option value="basic">基本イベント</option>
+            <option value="booth">ブース</option>
+          </select>
+        </Field>
+        <Field label="イベント担当者">
+          <Input
+            placeholder="事業担当 山田"
+            value={eventItem.ownerName ?? ""}
+            onChange={(event) =>
+              updateArrayItem(setEventInfo, index, { ownerName: event.target.value })
+            }
+          />
+        </Field>
+        <Field label="担当部署">
+          <Input
+            value={eventItem.department}
+            onChange={(event) =>
+              updateArrayItem(setEventInfo, index, {
+                department: event.target.value,
+              })
+            }
+          />
+        </Field>
+        <Field label="開始時刻">
+          <Input
+            placeholder="15:30"
+            value={eventItem.startTime}
+            onChange={(event) =>
+              updateArrayItem(setEventInfo, index, {
+                startTime: event.target.value,
+              })
+            }
+          />
+        </Field>
+        <Field label="実施場所">
+          <Input
+            placeholder="南広場ステージ"
+            value={eventItem.location}
+            onChange={(event) =>
+              updateArrayItem(setEventInfo, index, { location: event.target.value })
+            }
+          />
+        </Field>
+      </div>
+      <Field label="説明文">
+        <Textarea
+          placeholder="公開ページに掲載する説明"
+          value={eventItem.description}
+          onChange={(event) =>
+            updateArrayItem(setEventInfo, index, {
+              description: event.target.value,
+            })
+          }
+        />
+      </Field>
+      <ImageUploadField
+        imageUrl={eventItem.imageUrl}
+        label="イベント画像"
+        onChange={(imageUrl) => updateArrayItem(setEventInfo, index, { imageUrl })}
+      />
+      <PublishField
+        checked={eventItem.showOnTop !== false}
+        label="トップページに掲載する"
+        onChange={(checked) =>
+          updateArrayItem(setEventInfo, index, { showOnTop: checked })
+        }
+      />
+    </div>
+  );
+}
+
+function GatheringEventEditor({
+  eventItem,
+  index,
+  setEventInfo,
+}: {
+  eventItem: EventInfo;
+  index: number;
+  setEventInfo: Dispatch<SetStateAction<EventInfo[]>>;
+}) {
+  return (
+    <div className="grid gap-4 rounded-md border p-4">
+      <div className="grid gap-4 md:grid-cols-2">
+        <Field label="イベント名">
+          <Input
+            value={eventItem.title}
+            onChange={(event) =>
+              updateArrayItem(setEventInfo, index, { title: event.target.value })
+            }
+          />
+        </Field>
+        <Field label="イベント担当者">
+          <Input
+            value={eventItem.ownerName ?? ""}
+            onChange={(event) =>
+              updateArrayItem(setEventInfo, index, { ownerName: event.target.value })
+            }
+          />
+        </Field>
+        <Field label="集合時間">
+          <Input
+            value={eventItem.gatheringTime ?? eventItem.startTime}
+            onChange={(event) =>
+              updateArrayItem(setEventInfo, index, {
+                gatheringTime: event.target.value,
+                startTime: event.target.value,
+              })
+            }
+          />
+        </Field>
+        <Field label="集合場所">
+          <Input
+            value={eventItem.gatheringLocation ?? eventItem.location}
+            onChange={(event) =>
+              updateArrayItem(setEventInfo, index, {
+                gatheringLocation: event.target.value,
+                location: event.target.value,
+              })
+            }
+          />
+        </Field>
+        <Field label="解散時間">
+          <Input
+            value={eventItem.dismissalTime ?? eventItem.endTime ?? ""}
+            onChange={(event) =>
+              updateArrayItem(setEventInfo, index, {
+                dismissalTime: event.target.value,
+                endTime: event.target.value,
+              })
+            }
+          />
+        </Field>
+        <Field label="解散場所">
+          <Input
+            value={eventItem.dismissalLocation ?? ""}
+            onChange={(event) =>
+              updateArrayItem(setEventInfo, index, {
+                dismissalLocation: event.target.value,
+              })
+            }
+          />
+        </Field>
+        <Field label="集合受付担当">
+          <Input
+            value={eventItem.receptionOwner ?? ""}
+            onChange={(event) =>
+              updateArrayItem(setEventInfo, index, {
+                receptionOwner: event.target.value,
+              })
+            }
+          />
+        </Field>
+        <Field label="企画担当">
+          <Input
+            value={eventItem.planningOwner ?? ""}
+            onChange={(event) =>
+              updateArrayItem(setEventInfo, index, {
+                planningOwner: event.target.value,
+              })
+            }
+          />
+        </Field>
+      </div>
+      <Field label="説明文">
+        <Textarea
+          value={eventItem.description}
+          onChange={(event) =>
+            updateArrayItem(setEventInfo, index, {
+              description: event.target.value,
+            })
+          }
+        />
+      </Field>
+      <ImageUploadField
+        imageUrl={eventItem.imageUrl}
+        label="集合イベント画像"
+        onChange={(imageUrl) => updateArrayItem(setEventInfo, index, { imageUrl })}
+      />
+      <PublishField
+        checked={eventItem.showOnTop !== false}
+        label="トップページに掲載する"
+        onChange={(checked) =>
+          updateArrayItem(setEventInfo, index, { showOnTop: checked })
+        }
+      />
+    </div>
   );
 }
 
@@ -1334,4 +1654,88 @@ function createTicketItem(): TicketInfo {
     benefit: "",
     exchangeMethod: "",
   };
+}
+
+function createEventItem(
+  matchId: string,
+  category: EventInfo["category"],
+): EventInfo {
+  return {
+    id: `event-${Date.now()}`,
+    matchId,
+    category,
+    title: "",
+    department: "",
+    ownerName: "",
+    location: "",
+    startTime: "",
+    endTime: "",
+    description: "",
+    participationRule: "",
+    showOnTop: true,
+    ...(category === "gathering"
+      ? {
+          gatheringTime: "",
+          gatheringLocation: "",
+          dismissalTime: "",
+          dismissalLocation: "",
+          receptionOwner: "",
+          planningOwner: "",
+        }
+      : {}),
+  };
+}
+
+function createVipRoom(): VipRoomInfo {
+  return {
+    id: `vip-${Date.now()}`,
+    roomName: "",
+    userName: "",
+    guestCount: 0,
+    service: "",
+    note: "",
+  };
+}
+
+function createEquipmentPlacement(): EquipmentPlacementInfo {
+  return {
+    id: `equipment-placement-${Date.now()}`,
+    name: "",
+    quantity: "",
+    location: "",
+    note: "",
+  };
+}
+
+function createMediaVisit(): MediaVisitInfo {
+  return {
+    id: `media-${Date.now()}`,
+    mediaName: "",
+    mediaType: "ペン",
+    representative: "",
+    peopleCount: 1,
+    waitingRoom: "",
+    viewingLocation: "",
+  };
+}
+
+function defaultStaffAssignments(): StaffAssignmentInfo[] {
+  return [
+    { id: "staff-assignment-default-001", label: "アルバイトスタッフ", count: 0 },
+    { id: "staff-assignment-default-002", label: "ボランティア", count: 0 },
+    { id: "staff-assignment-default-003", label: "クラブ社員", count: 0 },
+    { id: "staff-assignment-default-004", label: "警備員", count: 0 },
+  ];
+}
+
+function defaultEquipmentPlacements(): EquipmentPlacementInfo[] {
+  return [
+    {
+      id: "equipment-placement-default-001",
+      name: "",
+      quantity: "",
+      location: "",
+      note: "",
+    },
+  ];
 }
