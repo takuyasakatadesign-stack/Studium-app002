@@ -22,7 +22,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { LpHeader, QuickNav } from "@/components/lp/lp-layout";
+import { LpHeader } from "@/components/lp/lp-layout";
 import { useStadiumData } from "@/components/providers/stadium-data-provider";
 import type { EventInfo } from "@/types";
 
@@ -52,7 +52,6 @@ export default function Home() {
   const tickets = data.internalOperationInfo.tickets ?? [];
   const topEvents = eventInfo.filter((event) => event.showOnTop !== false);
   const featuredFoods = foodItems.filter((item) => item.showOnTop !== false);
-  const specialEvents = topEvents.filter((event) => event.category === "special");
   const newGoods = goodsItems.filter(
     (item) => item.isNew && item.showOnTop !== false,
   );
@@ -100,7 +99,7 @@ export default function Home() {
         ticketHref={tickets[0]?.purchaseUrl ?? "#ticket"}
       />
       <section
-        className="relative min-h-[760px] overflow-hidden px-4 pb-8 pt-24 sm:min-h-[860px] sm:px-6 lg:min-h-screen lg:px-8"
+        className="relative min-h-[720px] overflow-hidden px-4 pb-8 pt-24 sm:min-h-[820px] sm:px-6 lg:min-h-screen lg:px-8"
         style={{
           backgroundImage:
             "radial-gradient(circle at 72% 28%, rgba(10,124,255,0.42), transparent 30%), radial-gradient(circle at 42% 72%, rgba(0,87,231,0.22), transparent 28%), linear-gradient(180deg, #06122A 0%, #020817 72%, #00040D 100%)",
@@ -135,8 +134,8 @@ export default function Home() {
           <span className="h-16 w-px bg-cyan-200/50" />
         </div>
 
-        <div className="relative z-[2] mx-auto grid min-h-[calc(100svh-6rem)] max-w-7xl items-end gap-8 lg:grid-cols-[minmax(0,0.56fr)_minmax(380px,0.44fr)]">
-          <div className="pb-8 pt-8 lg:pb-14">
+        <div className="relative z-[2] mx-auto flex min-h-[calc(100svh-6rem)] max-w-7xl items-end">
+          <div className="max-w-3xl pb-8 pt-8 lg:pb-14">
             <div className="flex flex-wrap items-center gap-2">
               <Badge className="border border-cyan-200/40 bg-[#0A7CFF]/24 px-3 py-1 text-cyan-50 hover:bg-[#0A7CFF]/24">
                 {currentMatch.matchName}
@@ -156,12 +155,6 @@ export default function Home() {
               NEXT
               <span className="block text-white">HOME GAME</span>
             </h1>
-            <p className="mt-5 max-w-[820px] text-[clamp(1.5rem,5.2vw,2.25rem)] font-black leading-[1.25] text-white md:whitespace-nowrap">
-              この青を、力に変える。
-            </p>
-            <p className="mt-4 max-w-2xl text-sm font-medium leading-7 text-[#D9E6FF] sm:text-base md:text-lg">
-              共に闘い、共に勝利を掴み取ろう。青く染まるスタジアムで、試合前から熱狂の一日が始まります。
-            </p>
 
             <div className="mt-7 grid max-w-3xl overflow-hidden rounded-lg border border-cyan-200/30 bg-[#00236B]/70 shadow-[0_24px_70px_rgba(0,35,107,0.34)] backdrop-blur md:grid-cols-[0.95fr_1.15fr]">
               <div className="border-b border-cyan-200/20 bg-[linear-gradient(135deg,rgba(10,124,255,0.38),rgba(3,18,48,0.78))] p-5 md:border-b-0 md:border-r">
@@ -236,59 +229,11 @@ export default function Home() {
               </Button>
             </div>
           </div>
-
-          <aside className="relative z-[3] mb-8 rounded-lg border border-cyan-200/24 bg-[#031230]/76 p-5 shadow-[0_24px_70px_rgba(0,35,107,0.36)] backdrop-blur lg:mb-14">
-            <p className="text-xs font-black uppercase text-cyan-100">Match Card</p>
-            <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-              <div className="rounded-md border border-white/10 bg-white/[0.08] p-4 text-center">
-                <p className="text-xs text-[#B8C7E6]">HOME</p>
-                <p className="mt-2 text-lg font-black text-white">{currentMatch.homeTeam}</p>
-              </div>
-              <p className="text-2xl font-black text-[#62B7FF]">VS</p>
-              <div className="rounded-md border border-white/10 bg-white/[0.08] p-4 text-center">
-                <p className="text-xs text-[#B8C7E6]">AWAY</p>
-                <p className="mt-2 text-lg font-black text-white">{currentMatch.opponent}</p>
-              </div>
-            </div>
-            <div className="mt-5 grid grid-cols-3 overflow-hidden rounded-md border border-cyan-200/24 bg-[#00236B]/64">
-              <CountdownItem label="DAYS" value="18" />
-              <CountdownItem label="HOURS" value="06" />
-              <CountdownItem label="MIN" value="30" />
-            </div>
-          </aside>
         </div>
       </section>
 
       <main className="bg-[radial-gradient(circle_at_70%_20%,rgba(10,124,255,0.32),transparent_34%),radial-gradient(circle_at_20%_10%,rgba(0,87,231,0.24),transparent_28%),linear-gradient(180deg,#06122A_0%,#020817_48%,#00040D_100%)] px-4 py-6 text-white sm:px-6 sm:py-8 lg:px-8">
         <div className="mx-auto max-w-6xl space-y-8 sm:space-y-10">
-          <nav className="sticky top-[73px] z-10 -mx-4 overflow-x-auto border-y border-cyan-200/20 bg-blue-950/90 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 lg:top-[65px] lg:-mx-8 lg:px-8">
-            <div className="mx-auto flex max-w-6xl gap-2">
-              {[
-                ["#schedule", "スケジュール"],
-                ["#events", "イベント"],
-                ["#gourmet", "グルメ"],
-                ["#goods", "グッズ"],
-                ["#access", "アクセス"],
-                ["#ticket", "チケット"],
-                ["#faq", "FAQ"],
-              ].map(([href, label]) => (
-                <a
-                  className="shrink-0 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-white/20"
-                  href={href}
-                  key={href}
-                >
-                  {label}
-                </a>
-              ))}
-            </div>
-          </nav>
-
-          <section className="-mt-10 grid gap-3 rounded-lg border border-cyan-200/30 bg-[#031230]/90 p-3 shadow-2xl shadow-blue-950/30 md:grid-cols-3">
-            <EventDayStat label="開門前の楽しみ" value={`${topEvents.length}件`} />
-            <EventDayStat label="出店グルメ" value={`${shops.length}店舗`} />
-            <EventDayStat label="新作グッズ" value={`${newGoods.length}点`} />
-          </section>
-
           <section className="relative grid gap-5 overflow-hidden rounded-lg border border-cyan-200/20 bg-[#031230]/80 p-5 shadow-xl shadow-blue-950/20 backdrop-blur lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(10,124,255,0.18),transparent_52%)]" />
             <div className="space-y-3">
@@ -327,39 +272,6 @@ export default function Home() {
               </div>
             </div>
           </section>
-
-          <QuickNav
-            items={[
-              {
-                description: "座席図と価格を確認して購入方法へ。",
-                href: "#ticket",
-                icon: Ticket,
-                label: "TICKET",
-                title: "チケット購入",
-              },
-              {
-                description: "ステージ、体験ブース、集合イベントをまとめて確認。",
-                href: "#events",
-                icon: Sparkles,
-                label: "EVENT",
-                title: "イベント情報",
-              },
-              {
-                description: `${shops.length}店舗の限定メニューと場所をチェック。`,
-                href: "#gourmet",
-                icon: Utensils,
-                label: "GOURMET",
-                title: "スタジアムグルメ",
-              },
-              {
-                description: "新商品と購入特典を試合前に確認。",
-                href: "#goods",
-                icon: Shirt,
-                label: "GOODS",
-                title: "グッズ情報",
-              },
-            ]}
-          />
 
           <section className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
             <Card className="overflow-hidden rounded-lg border border-cyan-200/20 bg-[#06122a] text-white shadow-xl">
@@ -765,7 +677,9 @@ export default function Home() {
                   >
                     <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
                       <span>
-                        <Badge variant="outline">{item.category}</Badge>
+                        <Badge className="border border-cyan-200/50 bg-cyan-200/10 text-cyan-50 hover:bg-cyan-200/10">
+                          {item.category}
+                        </Badge>
                         <span className="mt-3 block font-semibold">
                           {item.question}
                         </span>
@@ -825,79 +739,8 @@ export default function Home() {
   );
 }
 
-function MatchInfo({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: typeof CalendarDays;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="rounded-lg border border-white/20 bg-white/10 p-3 backdrop-blur">
-      <div className="flex items-center gap-2 text-cyan-100">
-        <Icon className="size-4" />
-        <span>{label}</span>
-      </div>
-      <p className="mt-1 font-semibold">{value}</p>
-    </div>
-  );
-}
-
-function HeroPick({
-  detail,
-  href,
-  icon: Icon,
-  label,
-  title,
-}: {
-  detail: string;
-  href: string;
-  icon: typeof CalendarDays;
-  label: string;
-  title: string;
-}) {
-  return (
-    <Link
-      className="group grid grid-cols-[44px_1fr_auto] items-center gap-3 rounded-md border border-cyan-200/20 bg-white/10 p-3 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-colors [clip-path:polygon(0_0,96%_0,100%_100%,0_100%)] hover:bg-white/20"
-      href={href}
-    >
-      <div className="flex size-11 items-center justify-center rounded-md bg-cyan-300 text-blue-950">
-        <Icon className="size-5" />
-      </div>
-      <div className="min-w-0">
-        <p className="text-xs font-semibold text-amber-100">{label}</p>
-        <p className="truncate font-semibold">{title}</p>
-        <p className="text-xs text-slate-300">{detail}</p>
-      </div>
-      <ArrowRight className="size-4 text-amber-100 transition-transform group-hover:translate-x-0.5" />
-    </Link>
-  );
-}
-
-function CountdownItem({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="border-r border-cyan-200/20 p-4 text-center last:border-r-0">
-      <p className="text-3xl font-black leading-none text-white">{value}</p>
-      <p className="mt-1 text-[10px] font-black uppercase tracking-normal text-[#A7D8FF]">
-        {label}
-      </p>
-    </div>
-  );
-}
-
 function formatHeroDate(date: string) {
   return date.replace(/^(\d{4})[./-]/, "").replace(/[/-]/g, ".");
-}
-
-function EventDayStat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-md border border-cyan-200/20 bg-[linear-gradient(135deg,rgba(10,124,255,0.22),rgba(3,18,48,0.78))] p-4 [clip-path:polygon(0_0,94%_0,100%_100%,0_100%)]">
-      <p className="text-xs font-semibold text-cyan-100">{label}</p>
-      <p className="mt-1 text-2xl font-semibold text-white">{value}</p>
-    </div>
-  );
 }
 
 function SectionTitle({
@@ -920,7 +763,7 @@ function SectionTitle({
       <div>
         <div
           className={`flex items-center gap-2 text-xs font-semibold ${
-            inverse ? "text-cyan-100" : "text-blue-700"
+            inverse ? "text-cyan-100" : "text-cyan-200"
           }`}
         >
           <Icon className="size-4" />
@@ -931,40 +774,16 @@ function SectionTitle({
         </h2>
       </div>
       {actionHref ? (
-        <Button asChild size="sm" variant="outline">
+        <Button
+          asChild
+          className="border-cyan-200/50 bg-white/10 text-white hover:border-cyan-100 hover:bg-white/20"
+          size="sm"
+          variant="outline"
+        >
           <Link href={actionHref}>{actionLabel}</Link>
         </Button>
       ) : null}
     </div>
-  );
-}
-
-function HighlightCard({
-  icon: Icon,
-  title,
-  description,
-  href,
-}: {
-  icon: typeof CalendarDays;
-  title: string;
-  description: string;
-  href: string;
-}) {
-  return (
-    <Link href={href}>
-      <Card className="h-full overflow-hidden rounded-lg border border-cyan-200/25 bg-[#06122a] text-white shadow-xl transition-transform [clip-path:polygon(0_0,94%_0,100%_100%,0_100%)] hover:-translate-y-0.5">
-        <CardContent className="relative flex min-h-32 items-center gap-4 p-4">
-          <div className="absolute inset-y-0 right-0 w-20 bg-[linear-gradient(135deg,transparent,rgba(98,183,255,0.24))]" />
-          <div className="z-[1] flex size-11 items-center justify-center rounded-md bg-blue-600 text-white shadow-[0_0_24px_rgba(10,124,255,0.28)]">
-            <Icon className="size-5" />
-          </div>
-          <div className="z-[1] min-w-0">
-            <h2 className="font-black uppercase tracking-normal">{title}</h2>
-            <p className="mt-1 text-sm text-slate-300">{description}</p>
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
   );
 }
 
@@ -1078,7 +897,7 @@ function getDefaultEventType(category: EventInfo["category"]): NonNullable<Event
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-md border bg-white p-4">
+    <div className="rounded-md border border-cyan-200/20 bg-white p-4 text-slate-950">
       <p className="text-xs font-semibold text-sky-700">{label}</p>
       <p className="mt-1 text-sm text-slate-700">{value}</p>
     </div>
@@ -1097,7 +916,7 @@ function ImageFeature({
   title: string;
 }) {
   return (
-    <div className="overflow-hidden rounded-lg border border-blue-100 bg-white shadow-sm">
+    <div className="overflow-hidden rounded-lg border border-blue-100 bg-white text-slate-950 shadow-sm">
       {imageUrl ? (
         <img
           alt={title}
@@ -1114,7 +933,7 @@ function ImageFeature({
           <p className="font-semibold">{title}</p>
           {onOpen ? (
             <Button
-              className="shrink-0"
+              className="shrink-0 border-blue-200 text-blue-950 hover:bg-blue-50"
               onClick={onOpen}
               size="sm"
               type="button"
